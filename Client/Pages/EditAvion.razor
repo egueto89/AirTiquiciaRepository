@@ -1,0 +1,107 @@
+﻿@page "/editAvion/{id:int}"
+@page "/editAvion"
+@using AirTiquiciaAPP.Shared
+@inject HttpClient Http
+@inject NavigationManager navigationManager
+
+@if (avion == null)
+{
+<span>Cargando Avion...</span>
+}
+else
+{
+<h3>Mantenimiento de tipo de aviona</h3>
+<EditForm Model="avion" OnValidSubmit="CreaOActualizaAvion">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="form-group row">
+        <label for="Descripcion" class="col-sm-1 col-form-label">Nombre Avion</label>
+        <div class="col-sm-4">
+            <InputText @bind-Value="avion.Descripcion" class="form-control"></InputText>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="IdTipoAvion" class="col-sm-1 col-form-label">TipoAvion</label>
+        <div class="col-sm-4">
+            <InputSelect class="form-control" @bind-Value="avion.IdTipoAvion" @onchange="@OnSelectTipoAvion">
+                <option value="0" selected>Seleccione</option>
+                @foreach (var tipoAvion in listTipovion)
+                    {
+                    <option value="@tipoAvion.IdTipoAvion">@tipoAvion.Descripcion</option>
+                    }
+            </InputSelect>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+        @if (avion.IdAvion == 0)
+        {
+            <span class="icon fa-solid fa-plus-square"></span>
+            @MensajeBoton;
+        }
+        else
+        {
+            <span class="icon fa-solid fa-pencil"></span>
+            @MensajeBoton;
+        }
+
+
+    </button>
+</EditForm>
+}
+
+
+
+@code {
+
+    [Parameter]
+    public int id { get; set; }
+
+    Avion avion = new Avion();
+    private List<Avion> avions = new List<Avion>();
+    private List<TipoAvion> listTipovion = new List<TipoAvion>();
+    private string MensajeBoton = " Crear Tipo TipoAvion" ;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        if (id != 0)
+        {
+            avions = await Http.GetFromJsonAsync<List<Avion>>($"Avion/{id}");
+            avion = avions.FirstOrDefault();
+            MensajeBoton = " Editar Tipo TipoAvion";
+        }
+
+        //selected element
+        listTipovion = await Http.GetFromJsonAsync<List<TipoAvion>>("TipoAvion");
+
+    }
+
+    private async void CreaOActualizaAvion()
+    {
+        HttpResponseMessage response;
+        if (avion.IdAvion == 0)
+        {
+            response = await Http.PostAsJsonAsync<Avion>("Avion", avion);
+
+            if (response.IsSuccessStatusCode)
+            {
+
+                navigationManager.NavigateTo($"aviones");
+            }
+        }
+        else
+        {
+            response = await Http.PutAsJsonAsync<Avion>("Avion", avion);
+            if (response.IsSuccessStatusCode)
+            {
+                navigationManager.NavigateTo($"aviones");
+            }
+        }
+    }
+
+    void OnSelectTipoAvion(ChangeEventArgs e)
+    {
+        avion.IdTipoAvion = Convert.ToInt32(e.Value);
+    }
+}

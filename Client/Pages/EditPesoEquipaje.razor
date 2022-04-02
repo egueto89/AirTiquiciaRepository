@@ -1,0 +1,97 @@
+﻿@page "/editPesoEquipaje/{id:int}"
+@page "/editPesoEquipaje"
+@using AirTiquiciaAPP.Shared
+@inject HttpClient Http
+@inject NavigationManager navigationManager
+
+@if (pesoEquipaje == null)
+{
+<span>Cargando Peso Equipaje...</span>
+}
+else
+{
+<h3>Mantenimiento de peso equipaje</h3>
+<EditForm Model="pesoEquipaje" OnValidSubmit="CreaOActualizaPesoEquipaje">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="form-group row">
+        <label for="Peso" class="col-sm-1 col-form-label">Peso</label>
+        <div class="col-sm-4">
+            <InputText @bind-Value="pesoEquipaje.PesoString" class="form-control"></InputText>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="Precio" class="col-sm-1 col-form-label">Precio</label>
+        <div class="col-sm-4">
+            <InputText @bind-Value="pesoEquipaje.PrecioString " class="form-control"></InputText>
+        </div>
+    </div>
+
+
+    <button type="submit" class="btn btn-primary">
+        @if (pesoEquipaje.IdPesoEquipaje == 0)
+        {
+            <span class="icon fa-solid fa-plus-square"></span>
+            @MensajeBoton;
+        }
+        else
+        {
+            <span class="icon fa-solid fa-pencil"></span>
+            @MensajeBoton;
+        }
+
+
+    </button>
+</EditForm>
+}
+
+
+
+@code {
+
+    [Parameter]
+    public int id { get; set; }
+
+    PesoEquipaje pesoEquipaje = new PesoEquipaje();
+    private List<PesoEquipaje> pesoEquipajes = new List<PesoEquipaje>();
+    private string MensajeBoton = " Crear Peso Equipaje" ;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        if (id != 0)
+        {
+            pesoEquipajes = await Http.GetFromJsonAsync<List<PesoEquipaje>>($"PesoEquipaje/{id}");
+            pesoEquipaje = pesoEquipajes.FirstOrDefault();
+            pesoEquipaje.PesoString = pesoEquipaje.Peso.ToString();
+            pesoEquipaje.PrecioString = pesoEquipaje.Precio.ToString();
+            MensajeBoton = " Editar Peso Equipaje";
+        }
+
+    }
+
+    private async void CreaOActualizaPesoEquipaje()
+    {
+        HttpResponseMessage response;
+        pesoEquipaje.Peso = Convert.ToInt16(pesoEquipaje.PesoString);
+        pesoEquipaje.Precio = Convert.ToDecimal(pesoEquipaje.PrecioString);
+        if (pesoEquipaje.IdPesoEquipaje == 0)
+        {
+            response = await Http.PostAsJsonAsync<PesoEquipaje>("PesoEquipaje", pesoEquipaje);
+
+            if (response.IsSuccessStatusCode)
+            {
+
+                navigationManager.NavigateTo($"pesoEquipaje");
+            }
+        }
+        else
+        {
+            response = await Http.PutAsJsonAsync<PesoEquipaje>("PesoEquipaje", pesoEquipaje);
+            if (response.IsSuccessStatusCode)
+            {
+                navigationManager.NavigateTo($"pesoEquipaje");
+            }
+        }
+    }
+}

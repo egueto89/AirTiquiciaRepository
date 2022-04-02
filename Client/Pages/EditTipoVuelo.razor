@@ -1,0 +1,92 @@
+﻿@page "/editTipoVuelo/{id:int}"
+@page "/editTipoVuelo"
+@using AirTiquiciaAPP.Shared
+@inject HttpClient Http
+@inject NavigationManager navigationManager
+
+@if (tipovuelo == null)
+{
+    <span>Cargando tipovuelo...</span>
+}
+else
+{
+    <h3>Mantenimiento de Tipo Vuelo</h3>
+    <EditForm Model="tipovuelo" OnValidSubmit="CreaOActualizaTipoVuelo">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div class="form-group row">
+            <label for="Descripcion" class="col-sm-2 col-form-label">Tipo Vuelo</label>
+            <div class="col-sm-4">
+                <InputText @bind-Value="tipovuelo.Descripcion" class="form-control"></InputText>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">
+            @if (tipovuelo.IdTipoVuelo == 0)
+            {
+                <span class="icon fa-solid fa-plus-square"></span>
+                @MensajeBoton;
+            }
+            else
+            {
+                <span class="icon fa-solid fa-pencil"></span> 
+                @MensajeBoton;
+            }
+
+
+        </button>
+    </EditForm>
+}
+
+
+
+@code {
+
+    [Parameter]
+    public int id { get; set; }
+
+    TipoVuelo tipovuelo = new TipoVuelo();
+    private TipoVuelo[] tipovuelos;
+    private string MensajeBoton = " Crear Tipo Vuelo" ;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+
+            if (id != 0)
+            {
+                tipovuelos = await Http.GetFromJsonAsync<TipoVuelo[]>($"TipoVuelo/{id}");
+                tipovuelo = tipovuelos.FirstOrDefault();
+                MensajeBoton = " Editar Tipo Vuelo";
+            }
+        }
+        catch (Exception ex)
+        {
+
+            throw;
+        }
+
+    }
+
+    private async void CreaOActualizaTipoVuelo()
+    {
+        HttpResponseMessage response;
+        if (tipovuelo.IdTipoVuelo == 0)
+        {
+            response = await Http.PostAsJsonAsync<TipoVuelo>("TipoVuelo", tipovuelo);
+
+            if (response.IsSuccessStatusCode)
+            {
+                navigationManager.NavigateTo($"tipoVuelos");
+            }
+        }
+        else
+        {
+            response = await Http.PutAsJsonAsync<TipoVuelo>("TipoVuelo", tipovuelo);
+            if (response.IsSuccessStatusCode)
+            {
+                navigationManager.NavigateTo($"tipoVuelos");
+            }
+        }
+    }
+}

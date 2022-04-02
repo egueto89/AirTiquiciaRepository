@@ -1,0 +1,87 @@
+﻿@page  "/"
+@*@using Newtonsoft.Json*@
+@*@using System.Security.Claims
+    @inject AuthenticationStateProvider AuthenticationStateProvider*@
+@inject NavigationManager NavigationManager
+@*@inject Blazored.LocalStorage.ILocalStorageService localStorageService*@
+@inject IJSRuntime jsRunTime
+@using AirTiquiciaAPP.Shared
+@inject HttpClient Http
+
+<EditForm Model="@login" OnValidSubmit="@ValidateUser">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    @if (errorMessage)
+    {
+        <div class="alert alert-danger col-4" role="alert">
+            @LoginMesssage
+        </div>
+        <br />
+    }
+
+    <div>
+        <h3 style="font-weight:bold; color:purple">Ingreso Sistema</h3>
+    </div>
+    <div>
+        <br />
+    </div>
+    <div class="col-12 row">
+        <input class="form-control col-4" @bind="login.Usuario" placeholder="usuario" />
+    </div>
+    <br />
+    <div class="col-12 row">
+        <input type="password" class="form-control col-4" @bind="login.Contrasena" placeholder="Contrasena" />
+    </div>
+    <br />
+    <div class="col-4 row">
+        <span class="col-4"></span>
+        <input type="submit" class="form-control col-4 btn btn-primary" value="Login" />
+    </div>
+
+</EditForm>
+
+@code {
+
+    LoginApp login = new LoginApp();
+    //private User user;
+    public string LoginMesssage { get; set; }
+    public bool errorMessage { get; set; }
+    public List<LoginApp> listlogin = new List<LoginApp>();
+
+    protected async override Task OnInitializedAsync()
+    {
+
+        errorMessage = false;
+
+    }
+
+    private async Task<bool> ValidateUser()
+    {
+        var response = await Http.PostAsJsonAsync<LoginApp>($"Login", login);
+
+        if (response.IsSuccessStatusCode)
+        {
+            listlogin= await response.Content.ReadFromJsonAsync<List<LoginApp>>();
+            if (listlogin.Any())
+            {
+                NavigationManager.NavigateTo("/index");
+            }
+            else
+            {
+                errorMessage = true;
+                LoginMesssage = "Usuario o contraseña incorrectos";
+            }
+
+
+        }
+        else
+        {
+            errorMessage = true;
+            LoginMesssage = "Ocurrio un problema con la aplicación.";
+        }
+
+
+        return await Task.FromResult(true);
+    }
+
+}

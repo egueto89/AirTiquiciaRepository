@@ -1,0 +1,111 @@
+﻿@page "/editPasajero/{id:int}"
+@page "/editPasajero"
+@using AirTiquiciaAPP.Shared
+@inject HttpClient Http
+@inject NavigationManager navigationManager
+
+@if (pasajero == null)
+{
+<span>Cargando Pasajero...</span>
+}
+else
+{
+<h3>Mantenimiento de tipo de persona</h3>
+<EditForm Model="pasajero" OnValidSubmit="CreaOActualizaPasajero">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="form-group row">
+        <label for="CantidadEquipajeString" class="col-sm-2 col-form-label">Cantidad Equipaje</label>
+        <div class="col-sm-4">
+            <InputText @bind-Value="pasajero.CantidadEquipajeString" class="form-control"></InputText>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="IdPersona" class="col-sm-2 col-form-label">Persona</label>
+        <div class="col-sm-4">
+            <InputSelect class="form-control" @bind-Value="pasajero.IdPersona" @onchange="@OnSelectPersona">
+                <option value="0" selected>Seleccione</option>
+                @foreach (var persona in listPersona)
+                    {
+                    <option value="@persona.IdPersona">@string.Concat(persona.Nombre, " ", persona.Apellidos)</option>
+                    }
+            </InputSelect>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+        @if (pasajero.IdPasajero == 0)
+        {
+            <span class="icon fa-solid fa-plus-square"></span>
+            @MensajeBoton;
+        }
+        else
+        {
+            <span class="icon fa-solid fa-pencil"></span>
+            @MensajeBoton;
+        }
+
+
+    </button>
+</EditForm>
+}
+
+
+
+@code {
+
+    [Parameter]
+    public int id { get; set; }
+
+    Pasajero pasajero = new Pasajero();
+    private List<Pasajero> pasajeros = new List<Pasajero>();
+    private List<Persona> listPersona = new List<Persona>();
+    private string MensajeBoton = " Crear Pasajero" ;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        if (id != 0)
+        {
+            pasajeros = await Http.GetFromJsonAsync<List<Pasajero>>($"Pasajero/{id}");
+            pasajero = pasajeros.FirstOrDefault();
+            pasajero.CantidadEquipajeString = pasajero.CantidadEquipaje.ToString();
+
+            MensajeBoton = " Editar Pasajero";
+        }
+
+        //selected element
+        listPersona = await Http.GetFromJsonAsync<List<Persona>>("Persona");
+
+    }
+
+    private async void CreaOActualizaPasajero()
+    {
+        HttpResponseMessage response;
+
+        pasajero.CantidadEquipaje = Convert.ToInt16(pasajero.CantidadEquipajeString);
+        if (pasajero.IdPasajero == 0)
+        {
+            response = await Http.PostAsJsonAsync<Pasajero>("Pasajero", pasajero);
+
+            if (response.IsSuccessStatusCode)
+            {
+
+                navigationManager.NavigateTo($"pasajeros");
+            }
+        }
+        else
+        {
+            response = await Http.PutAsJsonAsync<Pasajero>("Pasajero", pasajero);
+            if (response.IsSuccessStatusCode)
+            {
+                navigationManager.NavigateTo($"pasajeros");
+            }
+        }
+    }
+
+    void OnSelectPersona(ChangeEventArgs e)
+    {
+        pasajero.IdPersona = Convert.ToInt32(e.Value);
+    }
+}

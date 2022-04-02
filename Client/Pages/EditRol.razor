@@ -1,0 +1,92 @@
+﻿@page "/editRol/{id:int}"
+@page "/editRol"
+@using AirTiquiciaAPP.Shared
+@inject HttpClient Http
+@inject NavigationManager navigationManager
+
+@if (rol == null)
+{
+    <span>Cargando rol...</span>
+}
+else
+{
+    <h3>Mantenimiento de Rol</h3>
+    <EditForm Model="rol" OnValidSubmit="CreaOActualizaRol">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div class="form-group row">
+            <label for="Nombre" class="col-sm-1 col-form-label">Rol</label>
+            <div class="col-sm-4">
+                <InputText @bind-Value="rol.Nombre" class="form-control "></InputText>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">
+            @if (rol.IdRol == 0)
+            {
+                <span class="icon fa-solid fa-plus-square"></span>
+                @MensajeBoton;
+            }
+            else
+            {
+                <span class="icon fa-solid fa-pencil"></span> 
+                @MensajeBoton;
+            }
+
+
+        </button>
+    </EditForm>
+}
+
+
+
+@code {
+
+    [Parameter]
+    public int id { get; set; }
+
+    Rol rol = new Rol();
+    private Rol[] rols;
+    private string MensajeBoton = " Crear Rol" ;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+
+            if (id != 0)
+            {
+                rols = await Http.GetFromJsonAsync<Rol[]>($"Rol/{id}");
+                rol = rols.FirstOrDefault();
+                MensajeBoton = " Editar Rol";
+            }
+        }
+        catch (Exception ex)
+        {
+
+            throw;
+        }
+
+    }
+
+    private async void CreaOActualizaRol()
+    {
+        HttpResponseMessage response;
+        if (rol.IdRol == 0)
+        {
+            response = await Http.PostAsJsonAsync<Rol>("Rol", rol);
+
+            if (response.IsSuccessStatusCode)
+            {
+                navigationManager.NavigateTo($"roles");
+            }
+        }
+        else
+        {
+            response = await Http.PutAsJsonAsync<Rol>("Rol", rol);
+            if (response.IsSuccessStatusCode)
+            {
+                navigationManager.NavigateTo($"roles");
+            }
+        }
+    }
+}

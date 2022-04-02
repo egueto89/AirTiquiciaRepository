@@ -1,0 +1,107 @@
+﻿@page "/editTipoPersona/{id:int}"
+@page "/editTipoPersona"
+@using AirTiquiciaAPP.Shared
+@inject HttpClient Http
+@inject NavigationManager navigationManager
+
+@if (tipoPersona == null)
+{
+<span>Cargando TipoPersona...</span>
+}
+else
+{
+<h3>Mantenimiento de tipo de persona</h3>
+<EditForm Model="tipoPersona" OnValidSubmit="CreaOActualizaTipoPersona">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="form-group row">
+        <label for="TipoPersonaSistema" class="col-sm-1 col-form-label">Tipo</label>
+        <div class="col-sm-4">
+            <InputText @bind-Value="tipoPersona.Tipo" class="form-control"></InputText>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="IdPersona" class="col-sm-1 col-form-label">Persona</label>
+        <div class="col-sm-4">
+            <InputSelect class="form-control" @bind-Value="tipoPersona.IdPersona" @onchange="@OnSelectPersona">
+                <option value="0" selected>Seleccione</option>
+                @foreach (var persona in listPersona)
+                    {
+                    <option value="@persona.IdPersona">@string.Concat(persona.Nombre, " ", persona.Apellidos)</option>
+                    }
+            </InputSelect>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+        @if (tipoPersona.IdTipoPersona == 0)
+        {
+            <span class="icon fa-solid fa-plus-square"></span>
+            @MensajeBoton;
+        }
+        else
+        {
+            <span class="icon fa-solid fa-pencil"></span>
+            @MensajeBoton;
+        }
+
+
+    </button>
+</EditForm>
+}
+
+
+
+@code {
+
+    [Parameter]
+    public int id { get; set; }
+
+    TipoPersona tipoPersona = new TipoPersona();
+    private List<TipoPersona> tipoPersonas = new List<TipoPersona>();
+    private List<Persona> listPersona = new List<Persona>();
+    private string MensajeBoton = " Crear Tipo Persona" ;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        if (id != 0)
+        {
+            tipoPersonas = await Http.GetFromJsonAsync<List<TipoPersona>>($"TipoPersona/{id}");
+            tipoPersona = tipoPersonas.FirstOrDefault();
+            MensajeBoton = " Editar Tipo Persona";
+        }
+
+        //selected element
+        listPersona = await Http.GetFromJsonAsync<List<Persona>>("Persona");
+
+    }
+
+    private async void CreaOActualizaTipoPersona()
+    {
+        HttpResponseMessage response;
+        if (tipoPersona.IdTipoPersona == 0)
+        {
+            response = await Http.PostAsJsonAsync<TipoPersona>("TipoPersona", tipoPersona);
+
+            if (response.IsSuccessStatusCode)
+            {
+
+                navigationManager.NavigateTo($"tipoPersonas");
+            }
+        }
+        else
+        {
+            response = await Http.PutAsJsonAsync<TipoPersona>("TipoPersona", tipoPersona);
+            if (response.IsSuccessStatusCode)
+            {
+                navigationManager.NavigateTo($"tipoPersonas");
+            }
+        }
+    }
+
+    void OnSelectPersona(ChangeEventArgs e)
+    {
+        tipoPersona.IdPersona = Convert.ToInt32(e.Value);
+    }
+}

@@ -1,0 +1,133 @@
+﻿@page "/editUsuario/{id:int}"
+@page "/editUsuario"
+@using AirTiquiciaAPP.Shared
+@inject HttpClient Http
+@inject NavigationManager navigationManager
+
+@if (usuario == null)
+{
+<span>Cargando Usuario...</span>
+}
+else
+{
+<h3>Mantenimiento de usuario</h3>
+<EditForm Model="usuario" OnValidSubmit="CreaOActualizaUsuario">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="form-group row">
+        <label for="UsuarioSistema" class="col-sm-1 col-form-label">Usuario</label>
+        <div class="col-sm-4">
+            <InputText @bind-Value="usuario.UsuarioSistema" class="form-control" autocomplete="off" ></InputText>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="Contrasena" class="col-sm-1 col-form-label">Contraseña</label>
+        <div class="col-sm-4">
+            <InputText type="password" @bind-Value="usuario.Contrasena" class="form-control" autocomplete="off" ></InputText>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label for="IdPersona" class="col-sm-1 col-form-label">Persona</label>
+        <div class="col-sm-4">
+            <InputSelect class="form-control" @bind-Value="usuario.IdPersona" @onchange="@OnSelectPersona">
+                <option value="0" selected>Seleccione</option>
+                @foreach (var persona in listPersona)
+                    {
+                    <option value="@persona.IdPersona">@string.Concat(persona.Nombre, " ", persona.Apellidos)</option>
+                    }
+            </InputSelect>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="IdRol" class="col-sm-1 col-form-label">Rol</label>
+        <div class="col-sm-4">
+
+            <InputSelect class="form-control" @bind-Value="usuario.IdRol" @onchange="@OnSelectRol">
+                <option value="0" selected>Seleccione</option>
+                @foreach (var rol in roles)
+                    {
+                    <option value="@rol.IdRol">@rol.Nombre</option>
+                    }
+            </InputSelect>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+        @if (usuario.IdUsuario == 0)
+        {
+            <span class="icon fa-solid fa-plus-square"></span>
+            @MensajeBoton;
+        }
+        else
+        {
+            <span class="icon fa-solid fa-pencil"></span>
+            @MensajeBoton;
+        }
+
+
+    </button>
+</EditForm>
+}
+
+
+
+@code {
+
+    [Parameter]
+    public int id { get; set; }
+
+    Usuario usuario = new Usuario();
+    private List<Usuario> usuarios = new List<Usuario>();
+    private List<Persona> listPersona = new List<Persona>();
+    private List<Rol> roles = new List<Rol>();
+    private string MensajeBoton = " Crear Usuario" ;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        if (id != 0)
+        {
+            usuarios = await Http.GetFromJsonAsync<List<Usuario>>($"Usuario/{id}");
+            usuario = usuarios.FirstOrDefault();
+            MensajeBoton = " Editar Usuario";
+        }
+
+        //selected element
+        listPersona = await Http.GetFromJsonAsync<List<Persona>>("Persona");
+        roles = await Http.GetFromJsonAsync<List<Rol>>("Rol");
+
+    }
+
+    private async void CreaOActualizaUsuario()
+    {
+        HttpResponseMessage response;
+        if (usuario.IdUsuario == 0)
+        {
+            response = await Http.PostAsJsonAsync<Usuario>("Usuario", usuario);
+
+            if (response.IsSuccessStatusCode)
+            {
+
+                navigationManager.NavigateTo($"usuarios");
+            }
+        }
+        else
+        {
+            response = await Http.PutAsJsonAsync<Usuario>("Usuario", usuario);
+            if (response.IsSuccessStatusCode)
+            {
+                navigationManager.NavigateTo($"usuarios");
+            }
+        }
+    }
+
+    void OnSelectPersona(ChangeEventArgs e)
+    {
+        usuario.IdPersona = Convert.ToInt32( e.Value);
+    }
+    void OnSelectRol(ChangeEventArgs e)
+    {
+        usuario.IdRol = Convert.ToInt32(e.Value);
+    }
+}
