@@ -4,6 +4,17 @@
 @inject HttpClient Http
 @inject NavigationManager navigationManager
 
+    <AuthorizeView>
+        <Authorized Context="auth">
+
+        </Authorized>
+        <NotAuthorized>
+            <div class="alert alert-warning col-12" role="alert">
+                No Autorizado por favor inicie sesión
+            </div>
+        </NotAuthorized>
+    </AuthorizeView>
+
 @if (tipoAvion == null)
 {
 <span>Cargando TipoAvion...</span>

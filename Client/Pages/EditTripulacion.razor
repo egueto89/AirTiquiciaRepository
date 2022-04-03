@@ -4,52 +4,64 @@
 @inject HttpClient Http
 @inject NavigationManager navigationManager
 
-@if (tripulacion == null)
-{
-<span>Cargando tripulaci&oacute;n...</span>
-}
-else
-{
-<h3>Mantenimiento de Tripulaci&oacute;n</h3>
-    <EditForm Model="tripulacion" OnValidSubmit="CreaOActualizaTripulacion">
-        <DataAnnotationsValidator />
-        <ValidationSummary />
-        <div class="form-group row">
-            <label for="Descripcion" class="col-sm-1 col-form-label">Descripci&oacute;n</label>
-            <div class="col-sm-4">
-                <InputText @bind-Value="tripulacion.Descripcion" class="form-control "></InputText>
-            </div>
-        </div>
-        <button type="submit" class="btn btn-primary">
-            @if (tripulacion.IdTripulacion == 0)
+    <AuthorizeView>
+        <Authorized Context="auth">
+            @if (tripulacion == null)
             {
-                <span class="icon fa-solid fa-plus-square"></span>
-                @MensajeBoton;
+                <span>Cargando tripulaci&oacute;n...</span>
             }
             else
             {
-                <span class="icon fa-solid fa-pencil"></span> 
-                @MensajeBoton;
+                <h3>Mantenimiento de Tripulaci&oacute;n</h3>
+                <EditForm Model="tripulacion" OnValidSubmit="CreaOActualizaTripulacion">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+                    <div class="form-group row">
+                        <label for="Descripcion" class="col-sm-1 col-form-label">Descripci&oacute;n</label>
+                        <div class="col-sm-4">
+                            <InputText @bind-Value="tripulacion.Descripcion" class="form-control "></InputText>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        @if (tripulacion.IdTripulacion == 0)
+                        {
+                            <span class="icon fa-solid fa-plus-square"></span>
+                            @MensajeBoton;
+                        }
+                        else
+                        {
+                            <span class="icon fa-solid fa-pencil"></span>
+                            @MensajeBoton;
+                        }
+
+
+                    </button>
+                </EditForm>
             }
+        </Authorized>
+        <NotAuthorized>
+            <div class="alert alert-warning col-12" role="alert">
+                No Autorizado por favor inicie sesión
+            </div>
+        </NotAuthorized>
+    </AuthorizeView>
 
 
-        </button>
-    </EditForm>
-}
+  
 
 
 
-@code {
+    @code {
 
-    [Parameter]
-    public int id { get; set; }
+        [Parameter]
+        public int id { get; set; }
 
-    Tripulacion tripulacion = new Tripulacion();
-    private List<Tripulacion> tripulaciones = new List<Tripulacion>();
-    private string MensajeBoton = " Crear Tripulante" ;
+        Tripulacion tripulacion = new Tripulacion();
+        private List<Tripulacion> tripulaciones = new List<Tripulacion>();
+        private string MensajeBoton = " Crear Tripulante";
 
-    protected override async Task OnInitializedAsync()
-    {
+        protected override async Task OnInitializedAsync()
+        {
 
             if (id != 0)
             {
@@ -59,27 +71,27 @@ else
             }
 
 
-    }
+        }
 
-    private async void CreaOActualizaTripulacion()
-    {
-        HttpResponseMessage response;
-        if (tripulacion.IdTripulacion == 0)
+        private async void CreaOActualizaTripulacion()
         {
-            response = await Http.PostAsJsonAsync<Tripulacion>("Tripulacion", tripulacion);
-
-            if (response.IsSuccessStatusCode)
+            HttpResponseMessage response;
+            if (tripulacion.IdTripulacion == 0)
             {
-                navigationManager.NavigateTo($"tripulaciones");
+                response = await Http.PostAsJsonAsync<Tripulacion>("Tripulacion", tripulacion);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    navigationManager.NavigateTo($"tripulaciones");
+                }
+            }
+            else
+            {
+                response = await Http.PutAsJsonAsync<Tripulacion>("Tripulacion", tripulacion);
+                if (response.IsSuccessStatusCode)
+                {
+                    navigationManager.NavigateTo($"tripulaciones");
+                }
             }
         }
-        else
-        {
-            response = await Http.PutAsJsonAsync<Tripulacion>("Tripulacion", tripulacion);
-            if (response.IsSuccessStatusCode)
-            {
-                navigationManager.NavigateTo($"tripulaciones");
-            }
-        }
     }
-}

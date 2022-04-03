@@ -1,14 +1,32 @@
 ﻿@inherits LayoutComponentBase
-
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ILocalStorageService LocalStorage
+@inject ISyncLocalStorageService LocalStorageAsync
+@inject AuthenticationStateProvider AuthStateProvider
 <div class="page">
     <div class="sidebar">
         <NavMenu />
     </div>
 
     <div class="main">
-
+        <div class="top-row px-4">
+            <AuthorizeView>
+                <Authorized>
+                    <p>Bienvenido @LocalStorageAsync.GetItemAsString("userName").Replace('"', ' ')</p>
+                </Authorized>
+                <NotAuthorized>
+                    <a href="/">
+                        <span class="icon fa-solid fa-right-from-bracket" aria-hidden="true"></span> Iniciar Sesión
+                    </a>
+                </NotAuthorized>
+            </AuthorizeView>
+        </div>
         <div class="content px-4">
             @Body
         </div>
     </div>
 </div>
+
+@code{
+
+}

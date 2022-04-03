@@ -4,48 +4,57 @@
 @inject HttpClient Http
 @inject NavigationManager navigationManager
 
-@if (pesoEquipaje == null)
-{
-<span>Cargando Peso Equipaje...</span>
-}
-else
-{
-<h3>Mantenimiento de peso equipaje</h3>
-<EditForm Model="pesoEquipaje" OnValidSubmit="CreaOActualizaPesoEquipaje">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-    <div class="form-group row">
-        <label for="Peso" class="col-sm-1 col-form-label">Peso</label>
-        <div class="col-sm-4">
-            <InputText @bind-Value="pesoEquipaje.PesoString" class="form-control"></InputText>
-        </div>
-    </div>
-    <div class="form-group row">
-        <label for="Precio" class="col-sm-1 col-form-label">Precio</label>
-        <div class="col-sm-4">
-            <InputText @bind-Value="pesoEquipaje.PrecioString " class="form-control"></InputText>
-        </div>
-    </div>
+
+    <AuthorizeView>
+        <Authorized Context="auth">
+
+            @if (pesoEquipaje == null)
+            {
+                <span>Cargando Peso Equipaje...</span>
+            }
+            else
+            {
+                <h3>Mantenimiento de peso equipaje</h3>
+                <EditForm Model="pesoEquipaje" OnValidSubmit="CreaOActualizaPesoEquipaje">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+                    <div class="form-group row">
+                        <label for="Peso" class="col-sm-1 col-form-label">Peso</label>
+                        <div class="col-sm-4">
+                            <InputText @bind-Value="pesoEquipaje.PesoString" class="form-control"></InputText>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="Precio" class="col-sm-1 col-form-label">Precio</label>
+                        <div class="col-sm-4">
+                            <InputText @bind-Value="pesoEquipaje.PrecioString " class="form-control"></InputText>
+                        </div>
+                    </div>
 
 
-    <button type="submit" class="btn btn-primary">
-        @if (pesoEquipaje.IdPesoEquipaje == 0)
-        {
-            <span class="icon fa-solid fa-plus-square"></span>
-            @MensajeBoton;
-        }
-        else
-        {
-            <span class="icon fa-solid fa-pencil"></span>
-            @MensajeBoton;
-        }
+                    <button type="submit" class="btn btn-primary">
+                        @if (pesoEquipaje.IdPesoEquipaje == 0)
+                        {
+                            <span class="icon fa-solid fa-plus-square"></span>
+                            @MensajeBoton;
+                        }
+                        else
+                        {
+                            <span class="icon fa-solid fa-pencil"></span>
+                            @MensajeBoton;
+                        }
 
 
-    </button>
-</EditForm>
-}
-
-
+                    </button>
+                </EditForm>
+            }
+        </Authorized>
+        <NotAuthorized>
+            <div class="alert alert-warning col-12" role="alert">
+                No Autorizado por favor inicie sesión
+            </div>
+        </NotAuthorized>
+    </AuthorizeView>
 
 @code {
 

@@ -4,109 +4,121 @@
 @inject NavigationManager navigationManager
 @inject IJSRuntime JSRuntime
 
-<h3>Pasajero</h3>
-@if (listPasajero == null)
-{
-    <p><em>Loading...</em></p>
-}
-else if (!listPasajero.Any())
-{
-    <p><em>No existen Registros</em></p>
-}
-else
-{
-    <button class="btn btn-primary" id="btn-crear" @onclick="(() => ObtenerPasajero (0))">
-        <span class="icon fa-solid fa-plus-square"></span>Crear Pasajero
-    </button>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Cantidad Equipaje</th>
-                <th>Persona</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var pasajero in listPasajero)
+
+    <AuthorizeView>
+        <Authorized>
+            <h3>Pasajero</h3>
+            @if (listPasajero == null)
             {
-                <tr>
-                    <td>@pasajero.CantidadEquipaje</td>
-                    <td>@pasajero.NombrePersona</td>
-                    <td>
-                        <button class="btn btn-outline-secondary" @onclick="(() => ObtenerPasajero (pasajero.IdPasajero ))">
-                            <span class="icon fa-solid fa-pencil" title="pencil" aria-hidden="true"></span>
-                            Editar
-                        </button>
-                        <button class="btn btn-outline-danger" role="button" @onclick="(() => Delete_Click(pasajero))">
-                            <span class="icon fa-solid fa-trash" title="trash" aria-hidden="true"></span>
-                            Eliminar
-                        </button>
-                    </td>
-                </tr>
+                <p><em>Loading...</em></p>
             }
-        </tbody>
-    </table>
-}
-@code {
-
-    private List<Pasajero> listPasajero = new List<Pasajero>();
-
-    protected override async Task OnInitializedAsync()
-    {
-        await LlenarTabla();
-
-    }
-
-    private async Task LlenarTabla()
-    {
-        try
-        {
-            listPasajero = await Http.GetFromJsonAsync<List<Pasajero>>("Pasajero");
-        }
-        catch (Exception ex)
-        {
-            listPasajero = new List<Pasajero>();
-
-        }
-    }
-
-
-    private void ObtenerPasajero(int idPasajero)
-    {
-        if (idPasajero == 0)
-        {
-            navigationManager.NavigateTo($"editPasajero/");
-        }
-        else
-        {
-            navigationManager.NavigateTo($"editPasajero/{idPasajero }");
-        }
-
-
-    }
-
-    protected async void Delete_Click(Pasajero pasajero)
-    {
-        try
-        {
-            if (!await JSRuntime.InvokeAsync<bool>("confirm", $"¿Esta seguro que desea eliminar el pasajero '{pasajero.NombrePersona}'?"))
-                return;
-
-            var respon = await Http.DeleteAsync($"Pasajero/{pasajero.IdPasajero }");
-
-            if (respon.IsSuccessStatusCode)
+            else if (!listPasajero.Any())
             {
-                await LlenarTabla();
-                StateHasChanged();
+                <p><em>No existen Registros</em></p>
+            }
+            else
+            {
+                <button class="btn btn-primary" id="btn-crear" @onclick="(() => ObtenerPasajero (0))">
+                    <span class="icon fa-solid fa-plus-square"></span>Crear Pasajero
+                </button>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Cantidad Equipaje</th>
+                            <th>Persona</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var pasajero in listPasajero)
+                        {
+                            <tr>
+                                <td>@pasajero.CantidadEquipaje</td>
+                                <td>@pasajero.NombrePersona</td>
+                                <td>
+                                    <button class="btn btn-outline-secondary" @onclick="(() => ObtenerPasajero (pasajero.IdPasajero ))">
+                                        <span class="icon fa-solid fa-pencil" title="pencil" aria-hidden="true"></span>
+                                        Editar
+                                    </button>
+                                    <button class="btn btn-outline-danger" role="button" @onclick="(() => Delete_Click(pasajero))">
+                                        <span class="icon fa-solid fa-trash" title="trash" aria-hidden="true"></span>
+                                        Eliminar
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </Authorized>
+        <NotAuthorized>
+            <div class="alert alert-warning col-12" role="alert">
+                No Autorizado por favor inicie sesión
+            </div>
+        </NotAuthorized>
+    </AuthorizeView>
+
+   
+    @code {
+
+        private List<Pasajero> listPasajero = new List<Pasajero>();
+
+        protected override async Task OnInitializedAsync()
+        {
+            await LlenarTabla();
+
+        }
+
+        private async Task LlenarTabla()
+        {
+            try
+            {
+                listPasajero = await Http.GetFromJsonAsync<List<Pasajero>>("Pasajero");
+            }
+            catch (Exception ex)
+            {
+                listPasajero = new List<Pasajero>();
+
             }
         }
-        catch (Exception ex)
-        {
 
-            throw;
+
+        private void ObtenerPasajero(int idPasajero)
+        {
+            if (idPasajero == 0)
+            {
+                navigationManager.NavigateTo($"editPasajero/");
+            }
+            else
+            {
+                navigationManager.NavigateTo($"editPasajero/{idPasajero }");
+            }
+
+
         }
 
+        protected async void Delete_Click(Pasajero pasajero)
+        {
+            try
+            {
+                if (!await JSRuntime.InvokeAsync<bool>("confirm", $"¿Esta seguro que desea eliminar el pasajero '{pasajero.NombrePersona}'?"))
+                    return;
+
+                var respon = await Http.DeleteAsync($"Pasajero/{pasajero.IdPasajero }");
+
+                if (respon.IsSuccessStatusCode)
+                {
+                    await LlenarTabla();
+                    StateHasChanged();
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+
+
+        }
 
     }
-
-}

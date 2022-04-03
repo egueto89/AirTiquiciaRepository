@@ -1,12 +1,11 @@
 ﻿@page  "/"
-@*@using Newtonsoft.Json*@
-@*@using System.Security.Claims
-    @inject AuthenticationStateProvider AuthenticationStateProvider*@
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
-@*@inject Blazored.LocalStorage.ILocalStorageService localStorageService*@
+@inject ILocalStorageService localStorageService
 @inject IJSRuntime jsRunTime
-@using AirTiquiciaAPP.Shared
 @inject HttpClient Http
+@using AirTiquiciaAPP.Shared
+
 
 <EditForm Model="@login" OnValidSubmit="@ValidateUser">
     <DataAnnotationsValidator />
@@ -60,9 +59,11 @@
 
         if (response.IsSuccessStatusCode)
         {
-            listlogin= await response.Content.ReadFromJsonAsync<List<LoginApp>>();
+            listlogin = await response.Content.ReadFromJsonAsync<List<LoginApp>>();
             if (listlogin.Any())
             {
+                await localStorageService.SetItemAsync<string>("userName", listlogin.FirstOrDefault().NombrePersona);
+                await AuthenticationStateProvider.GetAuthenticationStateAsync();
                 NavigationManager.NavigateTo("/index");
             }
             else

@@ -4,62 +4,74 @@
 @inject HttpClient Http
 @inject NavigationManager navigationManager
 
-@if (persona == null)
-{
-<span>Cargando Persona...</span>
-}
-else
-{
-<h3>Mantenimiento de persona</h3>
-<EditForm Model="persona" OnValidSubmit="CreaOActualizaPersona">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-    <div class="form-group row">
-        <label for="Descripcion" class="col-sm-1 col-form-label">Nombre</label>
-        <div class="col-sm-4">
-            <InputText @bind-Value="persona.Nombre" class="form-control"></InputText>
-        </div>
-    </div>
-    <div class="form-group row">
-        <label for="Apellidos" class="col-sm-1 col-form-label">Apellidos</label>
-        <div class="col-sm-4">
-            <InputText @bind-Value="persona.Apellidos" class="form-control"></InputText>
-        </div>
-    </div>
-    <div class="form-group row">
-        <label for="Telefono" class="col-sm-1 col-form-label">Tel&eacute;fono</label>
-        <div class="col-sm-4">
-            <InputText @bind-Value="persona.Telefono" class="form-control"></InputText>
-        </div>
-    </div>
-    <div class="form-group row">
-        <label for="Direccion" class="col-sm-1 col-form-label">Direcci&oacute;n</label>
-        <div class="col-sm-4">
-            <InputText @bind-Value="persona.Direccion" class="form-control"></InputText>
-        </div>
-    </div>
-    <div class="form-group row">
-        <label for="Correo" class="col-sm-1 col-form-label">Correo</label>
-        <div class="col-sm-4">
-            <InputText @bind-Value="persona.Correo" class="form-control"></InputText>
-        </div>
-    </div>
-    <button type="submit" class="btn btn-primary">
-        @if (persona.IdPersona == 0)
-        {
-            <span class="icon fa-solid fa-plus-square"></span>
-            @MensajeBoton;
-        }
-        else
-        {
-            <span class="icon fa-solid fa-pencil"></span>
-            @MensajeBoton;
-        }
+
+    <AuthorizeView>
+        <Authorized Context="auth">
+
+            @if (persona == null)
+            {
+                <span>Cargando Persona...</span>
+            }
+            else
+            {
+                <h3>Mantenimiento de persona</h3>
+                <EditForm Model="persona" OnValidSubmit="CreaOActualizaPersona">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+                    <div class="form-group row">
+                        <label for="Descripcion" class="col-sm-1 col-form-label">Nombre</label>
+                        <div class="col-sm-4">
+                            <InputText @bind-Value="persona.Nombre" class="form-control"></InputText>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="Apellidos" class="col-sm-1 col-form-label">Apellidos</label>
+                        <div class="col-sm-4">
+                            <InputText @bind-Value="persona.Apellidos" class="form-control"></InputText>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="Telefono" class="col-sm-1 col-form-label">Tel&eacute;fono</label>
+                        <div class="col-sm-4">
+                            <InputText @bind-Value="persona.Telefono" class="form-control"></InputText>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="Direccion" class="col-sm-1 col-form-label">Direcci&oacute;n</label>
+                        <div class="col-sm-4">
+                            <InputText @bind-Value="persona.Direccion" class="form-control"></InputText>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="Correo" class="col-sm-1 col-form-label">Correo</label>
+                        <div class="col-sm-4">
+                            <InputText @bind-Value="persona.Correo" class="form-control"></InputText>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        @if (persona.IdPersona == 0)
+                        {
+                            <span class="icon fa-solid fa-plus-square"></span>
+                            @MensajeBoton;
+                        }
+                        else
+                        {
+                            <span class="icon fa-solid fa-pencil"></span>
+                            @MensajeBoton;
+                        }
 
 
-    </button>
-</EditForm>
-}
+                    </button>
+                </EditForm>
+            }
+        </Authorized>
+        <NotAuthorized>
+            <div class="alert alert-warning col-12" role="alert">
+                No Autorizado por favor inicie sesión
+            </div>
+        </NotAuthorized>
+    </AuthorizeView>
+
 
 
 

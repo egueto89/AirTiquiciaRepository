@@ -4,41 +4,48 @@
 @inject HttpClient Http
 @inject NavigationManager navigationManager
 
-@if (tipovuelo == null)
-{
-    <span>Cargando tipovuelo...</span>
-}
-else
-{
-    <h3>Mantenimiento de Tipo Vuelo</h3>
-    <EditForm Model="tipovuelo" OnValidSubmit="CreaOActualizaTipoVuelo">
-        <DataAnnotationsValidator />
-        <ValidationSummary />
-        <div class="form-group row">
-            <label for="Descripcion" class="col-sm-2 col-form-label">Tipo Vuelo</label>
-            <div class="col-sm-4">
-                <InputText @bind-Value="tipovuelo.Descripcion" class="form-control"></InputText>
-            </div>
-        </div>
-        <button type="submit" class="btn btn-primary">
-            @if (tipovuelo.IdTipoVuelo == 0)
+    <AuthorizeView>
+        <Authorized Context="auth">
+
+            @if (tipovuelo == null)
             {
-                <span class="icon fa-solid fa-plus-square"></span>
-                @MensajeBoton;
+                <span>Cargando tipovuelo...</span>
             }
             else
             {
-                <span class="icon fa-solid fa-pencil"></span> 
-                @MensajeBoton;
+                <h3>Mantenimiento de Tipo Vuelo</h3>
+                <EditForm Model="tipovuelo" OnValidSubmit="CreaOActualizaTipoVuelo">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+                    <div class="form-group row">
+                        <label for="Descripcion" class="col-sm-2 col-form-label">Tipo Vuelo</label>
+                        <div class="col-sm-4">
+                            <InputText @bind-Value="tipovuelo.Descripcion" class="form-control"></InputText>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        @if (tipovuelo.IdTipoVuelo == 0)
+                        {
+                            <span class="icon fa-solid fa-plus-square"></span>
+                            @MensajeBoton;
+                        }
+                        else
+                        {
+                            <span class="icon fa-solid fa-pencil"></span>
+                            @MensajeBoton;
+                        }
+
+
+                    </button>
+                </EditForm>
             }
-
-
-        </button>
-    </EditForm>
-}
-
-
-
+        </Authorized>
+        <NotAuthorized>
+            <div class="alert alert-warning col-12" role="alert">
+                No Autorizado por favor inicie sesión
+            </div>
+        </NotAuthorized>
+    </AuthorizeView>
 @code {
 
     [Parameter]
