@@ -110,7 +110,7 @@
                 if (!await JSRuntime.InvokeAsync<bool>("confirm", $"¿Esta seguro que desea eliminar el tipoPersona '{TiposDescripcion.DevuelveDescripcion(tipoPersona.TipoPer)}'?"))
                     return;
 
-                var respon = await Http.DeleteAsync($"TipoPersona /{tipoPersona.IdTipoPersona }");
+                var respon = await Http.DeleteAsync($"TipoPersona/{tipoPersona.IdTipoPersona }");
 
                 if (respon.IsSuccessStatusCode)
                 {

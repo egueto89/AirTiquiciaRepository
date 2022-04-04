@@ -15,6 +15,8 @@ namespace AirTiquiciaAPP.Shared
         [Range(1, int.MaxValue, ErrorMessage = "Debe seleccionar una persona")]
         public int IdPersona { get; set; }
 
+        [Required(ErrorMessage = "El tipo de persona es requerida")]
+        [Range(1, 255, ErrorMessage = "Debe seleccionar un tipo de persona")]
         public Tipos TipoPer { get; set; }
 
         public string NombrePersona { get; set; }

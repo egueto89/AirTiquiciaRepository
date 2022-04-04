@@ -17,7 +17,7 @@
                     <DataAnnotationsValidator />
                     <ValidationSummary />
                     <div class="form-group row">
-                        <label for="IdPersona" class="col-sm-1 col-form-label">Persona</label>
+                        <label for="TipoPer" class="col-sm-1 col-form-label">Tipo Persona</label>
                         <div class="col-sm-4">
                             <InputSelect class="form-control" @bind-Value="tipoPersona.TipoPer">
                                 @foreach (Tipos tipo in Enum.GetValues( typeof(Tipos)))

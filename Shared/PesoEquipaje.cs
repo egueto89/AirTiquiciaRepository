@@ -19,6 +19,7 @@ namespace AirTiquiciaAPP.Shared
 
         [Required(ErrorMessage = "El Peso es requerida")]
         [RegularExpression("([1-9][0-9]*)",ErrorMessage ="El peso no es válido")]
+        [Range(1, 255, ErrorMessage = "El peso supera el tamaño permitido de 255")]
         public string PesoString { get; set; }
 
         [Required(ErrorMessage = "El Precio es requerida")]

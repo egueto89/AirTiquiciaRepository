@@ -16,10 +16,12 @@ namespace AirTiquiciaAPP.Shared
 
         [Required(ErrorMessage = "El Fila es requerida")]
         [RegularExpression("([1-9][0-9]*)", ErrorMessage = "La Fila no es válido")]
+        [Range(1, byte.MaxValue, ErrorMessage = "Cantidad de Fila no permitidas")]
         public string FilaString { get; set; }
 
         [Required(ErrorMessage = "El Asiento es requerida")]
         [RegularExpression("([1-9][0-9]*)", ErrorMessage = "El Asiento no es válido")]
+        [Range(1, byte.MaxValue, ErrorMessage = "Cantidad de Asiento no permitidas")]
         public string AsientoString { get; set; }
     }
 }

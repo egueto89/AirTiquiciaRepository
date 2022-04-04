@@ -16,9 +16,9 @@ namespace AirTiquiciaAPP.Shared
 
         public Int16 CantidadEquipaje { get; set; }
 
-        [Required(ErrorMessage = "El Fila es requerida")]
-        [RegularExpression("([1-9][0-9]*)", ErrorMessage = "La Fila no es válido")]
-        [Range(0, byte.MaxValue, ErrorMessage = "Cantidad de maletas no permitidas")]
+        [Required(ErrorMessage = "La Cantidad de Equipaje es requerida")]
+        [RegularExpression("([1-9][0-9]*)", ErrorMessage = "La Cantidad de Equipaje no es válido")]
+        [Range(0, byte.MaxValue, ErrorMessage = "Cantidad de Equipaje no permitidas")]
         public string CantidadEquipajeString { get; set; }
 
         public string NombrePersona { get; set; }
