@@ -1,0 +1,23 @@
+USE AirTiquicia
+GO
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Persona]') AND type in (N'U'))
+DROP TABLE [dbo].[Persona]
+GO
+/*
+Crea tabla de Persona 
+
+*/
+CREATE TABLE dbo.Persona
+(
+IdPersona INT IDENTITY(1,1) NOT NULL,
+Nombre VARCHAR(100) NOT NULL,  
+Apellidos VARCHAR(100) NOT NULL,  
+Telefono  VARCHAR(50) NULL,
+Direccion VARCHAR(250) NOT NULL,
+Correo VARCHAR(150) NOT NULL
+)
+ALTER TABLE dbo.Persona ADD CONSTRAINT [PK_Persona] PRIMARY KEY CLUSTERED
+(
+   IdPersona ASC 
+) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO

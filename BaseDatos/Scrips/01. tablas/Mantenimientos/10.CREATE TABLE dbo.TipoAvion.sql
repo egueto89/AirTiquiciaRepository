@@ -1,0 +1,21 @@
+USE AirTiquicia
+GO
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[TipoAvion]') AND type in (N'U'))
+DROP TABLE [dbo].[TipoAvion]
+GO
+/*
+Crea tabla de TipoAvion 
+
+*/
+CREATE TABLE dbo.TipoAvion
+(
+IdTipoAvion  INT NOT NULL IDENTITY(1,1),
+Descripcion VARCHAR(150) NOT NULL,
+Fila TINYINT NOT NULL,
+Asiento TINYINT NOT NULL
+)
+ALTER TABLE dbo.TipoAvion ADD CONSTRAINT [PK_TipoAvion] PRIMARY KEY CLUSTERED
+(
+   IdTipoAvion ASC 
+) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
