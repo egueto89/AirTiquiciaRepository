@@ -115,7 +115,7 @@
         {
             try
             {
-                if (!await JSRuntime.InvokeAsync<bool>("confirm", $"¿Esta seguro que desea eliminar el tripulante '{usuario.UsuarioSistema}'?"))
+                if (!await JSRuntime.InvokeAsync<bool>("confirm", $"¿Esta seguro que desea eliminar el usuario '{usuario.UsuarioSistema}'?"))
                     return;
 
                 var respon = await Http.DeleteAsync($"Usuario/{usuario.IdUsuario}");
