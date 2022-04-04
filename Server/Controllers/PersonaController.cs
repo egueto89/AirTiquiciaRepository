@@ -83,5 +83,7 @@ namespace AirTiquiciaAPP.Server.Controllers
                 .OnError(x => _logger.LogError(x, "Error Actualizando Persona"))
                 .Exec();
         }
+
+
     }
 }

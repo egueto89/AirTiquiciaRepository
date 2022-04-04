@@ -1,0 +1,155 @@
+﻿@page "/editVuelo/{id:int}"
+@page "/editVuelo"
+@using AirTiquiciaAPP.Shared
+@inject HttpClient Http
+@inject NavigationManager navigationManager
+
+@if (avion == null)
+{
+<span>Cargando Vuelo...</span>
+}
+else
+{
+<h3>Mantenimiento vuelo</h3>
+<EditForm Model="avion" OnValidSubmit="CreaOActualizaVuelo">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="form-group row">
+        <label for="NumeroVuelo" class="col-sm-2 col-form-label">Número Vuelo</label>
+        <div class="col-sm-4">
+            <InputText @bind-Value="avion.NumeroVuelo" class="form-control"></InputText>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="IdTipoVuelo" class="col-sm-2 col-form-label">TipoVuelo</label>
+        <div class="col-sm-4">
+            <InputSelect class="form-control" @bind-Value="avion.IdTipoVuelo" @onchange="@OnSelectTipoVuelo">
+                <option value="0" selected>Seleccione</option>
+                @foreach (var tipoVuelo in listTipovion)
+                {
+                <option value="@tipoVuelo.IdTipoVuelo">@tipoVuelo.Descripcion</option>
+                }
+            </InputSelect>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="FechaSalida" class="col-sm-2 col-form-label">Fecha Salida</label>
+        <div class="col-sm-4">
+            <InputDate @bind-Value="avion.FechaSalida" class="form-control"></InputDate>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="FechaLlegada" class="col-sm-2 col-form-label">Fecha Llegada</label>
+        <div class="col-sm-4">
+            <InputDate @bind-Value="avion.FechaLlegada" class="form-control"></InputDate>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="HoraSalida" class="col-sm-2 col-form-label">Hora de Salida</label>
+        <div class="col-sm-4">
+            <InputNumber @bind-Value="avion.HoraSalida" class="form-control"></InputNumber>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="MinutosSalida" class="col-sm-2 col-form-label">Minutos de Salida</label>
+        <div class="col-sm-4">
+            <InputNumber @bind-Value="avion.MinutosSalida" class="form-control"></InputNumber>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="DuracionHoraVuelo" class="col-sm-2 col-form-label">Duración Vuelo</label>
+        <div class="col-sm-4">
+            <InputNumber @bind-Value="avion.DuracionHoraVuelo" class="form-control"></InputNumber>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="DuracionMinutosVuelo" class="col-sm-2 col-form-label">Minutos Vuelo</label>
+        <div class="col-sm-4">
+            <InputNumber @bind-Value="avion.DuracionMinutosVuelo" class="form-control"></InputNumber>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="HoraLlegada" class="col-sm-2 col-form-label">Hora de Llegada</label>
+        <div class="col-sm-4">
+            <InputNumber @bind-Value="avion.HoraLlegada" class="form-control"></InputNumber>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="MinutosLlegada" class="col-sm-2 col-form-label">Minutos de Llegada</label>
+        <div class="col-sm-4">
+            <InputNumber @bind-Value="avion.MinutosLlegada" class="form-control"></InputNumber>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+        @if (avion.IdVuelo == 0)
+        {
+            <span class="icon fa-solid fa-plus-square"></span>
+            @MensajeBoton;
+        }
+        else
+        {
+            <span class="icon fa-solid fa-pencil"></span>
+            @MensajeBoton;
+        }
+
+
+    </button>
+</EditForm>
+}
+
+
+
+@code {
+
+    [Parameter]
+    public int id { get; set; }
+
+    Vuelo avion = new Vuelo();
+    private List<Vuelo> avions = new List<Vuelo>();
+    private List<TipoVuelo> listTipovion = new List<TipoVuelo>();
+    private string MensajeBoton = " Crear Vuelo" ;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        if (id != 0)
+        {
+            avions = await Http.GetFromJsonAsync<List<Vuelo>>($"Vuelo/{id}");
+            avion = avions.FirstOrDefault();
+            MensajeBoton = " Editar Vuelo";
+        }
+
+        //selected element
+        listTipovion = await Http.GetFromJsonAsync<List<TipoVuelo>>("TipoVuelo");
+
+    }
+
+    private async void CreaOActualizaVuelo()
+    {
+        HttpResponseMessage response;
+        if (avion.IdVuelo == 0)
+        {
+            response = await Http.PostAsJsonAsync<Vuelo>("Vuelo", avion);
+
+            if (response.IsSuccessStatusCode)
+            {
+
+                navigationManager.NavigateTo($"aviones");
+            }
+        }
+        else
+        {
+            response = await Http.PutAsJsonAsync<Vuelo>("Vuelo", avion);
+            if (response.IsSuccessStatusCode)
+            {
+                navigationManager.NavigateTo($"aviones");
+            }
+        }
+    }
+
+    void OnSelectTipoVuelo(ChangeEventArgs e)
+    {
+        avion.IdTipoVuelo = Convert.ToInt32(e.Value);
+    }
+}

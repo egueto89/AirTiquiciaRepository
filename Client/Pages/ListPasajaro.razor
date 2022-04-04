@@ -12,11 +12,7 @@
             {
                 <p><em>Loading...</em></p>
             }
-            else if (!listPasajero.Any())
-            {
-                <p><em>No existen Registros</em></p>
-            }
-            else
+            else 
             {
                 <button class="btn btn-primary" id="btn-crear" @onclick="(() => ObtenerPasajero (0))">
                     <span class="icon fa-solid fa-plus-square"></span>Crear Pasajero
@@ -30,23 +26,31 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var pasajero in listPasajero)
+                        @if (!listPasajero.Any())
                         {
-                            <tr>
-                                <td>@pasajero.CantidadEquipaje</td>
-                                <td>@pasajero.NombrePersona</td>
-                                <td>
-                                    <button class="btn btn-outline-secondary" @onclick="(() => ObtenerPasajero (pasajero.IdPasajero ))">
-                                        <span class="icon fa-solid fa-pencil" title="pencil" aria-hidden="true"></span>
-                                        Editar
-                                    </button>
-                                    <button class="btn btn-outline-danger" role="button" @onclick="(() => Delete_Click(pasajero))">
-                                        <span class="icon fa-solid fa-trash" title="trash" aria-hidden="true"></span>
-                                        Eliminar
-                                    </button>
-                                </td>
-                            </tr>
+                            <p><em>No existen Registros</em></p>
                         }
+                        else
+                        {
+                            @foreach (var pasajero in listPasajero)
+                            {
+                                <tr>
+                                    <td>@pasajero.CantidadEquipaje</td>
+                                    <td>@pasajero.NombrePersona</td>
+                                    <td>
+                                        <button class="btn btn-outline-secondary" @onclick="(() => ObtenerPasajero (pasajero.IdPasajero ))">
+                                            <span class="icon fa-solid fa-pencil" title="pencil" aria-hidden="true"></span>
+                                            Editar
+                                        </button>
+                                        <button class="btn btn-outline-danger" role="button" @onclick="(() => Delete_Click(pasajero))">
+                                            <span class="icon fa-solid fa-trash" title="trash" aria-hidden="true"></span>
+                                            Eliminar
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+
                     </tbody>
                 </table>
             }

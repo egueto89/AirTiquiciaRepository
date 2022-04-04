@@ -9,9 +9,13 @@
 }
 
 .sidebar {
-    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+    background-image: linear-gradient(to top, #3c4b8d, #3c59a4, #3967bb, #2f76d3, #1286eb);
+    /*background-image: linear-gradient(180deg, rgb(0 148 255) 0%, #0026ff 70%); */
+    /*linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);*/
 }
-
+.page {
+    height: auto;
+}
 .top-row {
     background-color: #f7f7f7;
     border-bottom: 1px solid #d6d5d5;
@@ -52,7 +56,6 @@
 
     .sidebar {
         width: 250px;
-        height: 100vh;
         position: sticky;
         top: 0;
     }

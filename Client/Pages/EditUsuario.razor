@@ -103,7 +103,7 @@
             }
 
             //selected element
-            listPersona = await Http.GetFromJsonAsync<List<Persona>>("Persona");
+            listPersona = await Http.GetFromJsonAsync<List<Persona>>("Usuario/persona");
             roles = await Http.GetFromJsonAsync<List<Rol>>("Rol");
 
         }

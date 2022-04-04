@@ -16,14 +16,10 @@
             {
                 <p><em>Loading...</em></p>
             }
-            else if (!listTipoAviones.Any())
-            {
-                <p><em>No existen Registros</em></p>
-            }
-            else
+            else 
             {
                 <button class="btn btn-primary" id="btn-crear" @onclick="(() => ObtenerTipoAvion (0))">
-                    <span class="icon fa-solid fa-plus-square"></span>Crear Tipo Avion
+                    <span class="icon fa-solid fa-plus-square"></span>Crear Tipo Avión
                 </button>
                 <table class="table table-striped">
                     <thead>
@@ -35,24 +31,32 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var tipoAvion in listTipoAviones)
+                        @if (!listTipoAviones.Any())
                         {
-                            <tr>
-                                <td>@tipoAvion.Descripcion</td>
-                                <td>@tipoAvion.Fila</td>
-                                <td>@tipoAvion.Asiento</td>
-                                <td>
-                                    <button class="btn btn-outline-secondary" @onclick="(() => ObtenerTipoAvion (tipoAvion.IdTipoAvion ))">
-                                        <span class="icon fa-solid fa-pencil" title="pencil" aria-hidden="true"></span>
-                                        Editar
-                                    </button>
-                                    <button class="btn btn-outline-danger" role="button" @onclick="(() => Delete_Click(tipoAvion))">
-                                        <span class="icon fa-solid fa-trash" title="trash" aria-hidden="true"></span>
-                                        Eliminar
-                                    </button>
-                                </td>
-                            </tr>
+                            <p><em>No existen Registros</em></p>
                         }
+                        else
+                        {
+                            @foreach (var tipoAvion in listTipoAviones)
+                            {
+                                <tr>
+                                    <td>@tipoAvion.Descripcion</td>
+                                    <td>@tipoAvion.Fila</td>
+                                    <td>@tipoAvion.Asiento</td>
+                                    <td>
+                                        <button class="btn btn-outline-secondary" @onclick="(() => ObtenerTipoAvion (tipoAvion.IdTipoAvion ))">
+                                            <span class="icon fa-solid fa-pencil" title="pencil" aria-hidden="true"></span>
+                                            Editar
+                                        </button>
+                                        <button class="btn btn-outline-danger" role="button" @onclick="(() => Delete_Click(tipoAvion))">
+                                            <span class="icon fa-solid fa-trash" title="trash" aria-hidden="true"></span>
+                                            Eliminar
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+
                     </tbody>
                 </table>
             }

@@ -88,5 +88,16 @@ namespace AirTiquiciaAPP.Server.Controllers
                 .OnError(x => _logger.LogError(x, "Error Actualizando Usuario"))
                 .Exec();
         }
+
+        [HttpGet("persona")]
+        public async Task ObtieneEmpleados()
+        {
+            Response.ContentType = "application/json";
+            _logger.LogInformation("Obteniendo  persona");
+            await _command.Sql(@"SELECT pe.IdPersona , pe.Nombre , pe.Apellidos,pe.Telefono, pe.Direccion,pe.Correo FROM Persona pe 
+                                INNER JOIN TipoPersona tp ON pe.IdPersona = tp.IdPersona
+                                WHERE TP.TipoPer=1 FOR JSON PATH")
+                .Stream(Response.Body, defaultOutput: "[]");
+        }
     }
 }

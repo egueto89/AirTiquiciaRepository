@@ -1,0 +1,161 @@
+﻿@page "/vuelos"
+@using AirTiquiciaAPP.Shared
+@inject HttpClient Http
+@inject NavigationManager navigationManager
+@inject IJSRuntime JSRuntime
+
+
+
+    <AuthorizeView>
+        <Authorized>
+            <h1>Vuelos</h1>
+
+            <p>Lista de tipo de vuelos</p>
+
+            @if (listVuelos == null)
+            {
+                <p><em>Loading...</em></p>
+            }
+            else 
+            {
+                <button class="btn btn-primary" id="btn-crear" @onclick="(()=>ObtenerVuelos(0))">
+                    <span class="icon fa-solid fa-plus-square"></span>
+                    Crear Vuelo
+                </button>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Tipo Vuelo</th>
+                            <th>Avion</th>
+                            <th>Destino</th>
+                            <th>Llegada</th>
+                            <th>Tripulación</th>
+                            <th>Número Vuelo</th>
+                            <th>Fecha Salida</th>
+                            <th>Fecha Llegada</th>
+                            <th>Hora Salida</th>
+                            <th>Minutos Salida</th>
+                            <th>Duración Hora</th>
+                            <th>Duración Minutos</th>
+                            <th>Hora Llegada</th>
+                            <th>Minutos Llegada</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (!listVuelos.Any())
+                        {
+                            <p><em>No existen Registros</em></p>
+                        }
+                        else
+                        {
+                            @foreach (var vuelo in listVuelos)
+                            {
+                    <tr>
+                        <td>@vuelo.TipoVueloDescripcion</td>
+                        <td>@vuelo.AvionDescripcion</td>
+                        <td>@vuelo.DestinoDescripcion</td>
+                        <td>@vuelo.DestinoLlegada</td>
+                        <td>@vuelo.PersoTripu</td>
+                        <td>@vuelo.NumeroVuelo</td>
+                        <td>@vuelo.FechaSalida</td>
+                        <td>@vuelo.FechaLlegada</td>
+                        <td>@vuelo.HoraSalida</td>
+                        <td>@vuelo.MinutosSalida</td>
+                        <td>@vuelo.DuracionHoraVuelo</td>
+                        <td>@vuelo.DuracionMinutosVuelo</td>
+                        <td>@vuelo.HoraLlegada</td>
+                        <td>@vuelo.MinutosLlegada</td>
+
+                        <td>
+                            <button class="btn btn-outline-secondary" @onclick="(()=>ObtenerVuelos(vuelo.IdVuelo))">
+                                <span class="icon fa-solid fa-pencil" title="pencil" aria-hidden="true"></span>
+                                Editar
+                            </button>
+                            <button class="btn btn-outline-danger" vueloe="button" @onclick="(()=>Delete_Click(vuelo))">
+                                <span class="icon fa-solid fa-trash" title="trash" aria-hidden="true"></span>
+                                Eliminar
+                            </button>
+                        </td>
+                    </tr>
+                            }
+                        }
+
+                    </tbody>
+                </table>
+            }
+        </Authorized>
+        <NotAuthorized>
+            <div class="alert alert-warning col-12" role="alert">
+                No Autorizado por favor inicie sesión
+            </div>
+        </NotAuthorized>
+    </AuthorizeView>
+
+  
+
+    @code {
+        private List<Vuelo> listVuelos = new List<Vuelo>();
+
+        protected override async Task OnInitializedAsync()
+        {
+
+            await LlenarTabla();
+        }
+
+        private async Task LlenarTabla()
+        {
+            try
+            {
+                listVuelos = await Http.GetFromJsonAsync<List<Vuelo>>("Vuelo");
+            }
+            catch (Exception ex)
+            {
+                listVuelos = new List<Vuelo>();
+
+            }
+        }
+
+
+        private void ObtenerVuelos(int idVuelos)
+        {
+            if (idVuelos == 0)
+            {
+                navigationManager.NavigateTo($"editVuelo/");
+            }
+            else
+            {
+                navigationManager.NavigateTo($"editVuelo/{idVuelos}");
+            }
+
+
+        }
+
+        protected async void Delete_Click(Vuelo vuelo)
+        {
+            try
+            {
+                if (!await JSRuntime.InvokeAsync<bool>("confirm", $"¿Esta seguro que desea eliminar el vuelo '{vuelo.IdAvion}'?"))
+                    return;
+
+                var respon = await Http.DeleteAsync($"Vuelos/{vuelo.IdVuelo}");
+
+                if (respon.IsSuccessStatusCode)
+                {
+                    await LlenarTabla();
+                    StateHasChanged();
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+
+
+        }
+
+
+
+
+    }

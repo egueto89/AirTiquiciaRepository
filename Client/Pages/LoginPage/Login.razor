@@ -29,12 +29,12 @@
     </div>
     <br />
     <div class="col-12 row">
-        <input type="password" class="form-control col-4" @bind="login.Contrasena" placeholder="Contrasena" />
+        <input type="password" class="form-control col-4" @bind="login.Contrasena" placeholder="Contraseña" />
     </div>
     <br />
     <div class="col-4 row">
         <span class="col-4"></span>
-        <input type="submit" class="form-control col-4 btn btn-primary" value="Login" />
+        <input type="submit" class="form-control col-4 btn btn-primary" value="Iniciar Sesión" />
     </div>
 
 </EditForm>
@@ -50,6 +50,12 @@
     {
 
         errorMessage = false;
+        var result =   await localStorageService.GetItemAsStringAsync("userName");
+        if (!string.IsNullOrEmpty(result))
+        {
+            NavigationManager.NavigateTo("/index");
+        }
+
 
     }
 

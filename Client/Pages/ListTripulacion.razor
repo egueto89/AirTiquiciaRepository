@@ -16,11 +16,7 @@
             {
                 <p><em>Loading...</em></p>
             }
-            else if (!listTripulacion.Any())
-            {
-                <p><em>No existen Registros</em></p>
-            }
-            else
+            else 
             {
                 <button class="btn btn-primary" id="btn-crear" @onclick="(() => ObtenerTripulacion(0))">
                     <span class="icon fa-solid fa-plus-square"></span>
@@ -34,21 +30,28 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var tripulacion in listTripulacion)
+                        @if (!listTripulacion.Any())
                         {
-                            <tr>
-                                <td>@tripulacion.Descripcion</td>
-                                <td>
-                                    <button class="btn btn-outline-secondary" @onclick="(() => ObtenerTripulacion(tripulacion.IdTripulacion))">
-                                        <span class="icon fa-solid fa-pencil" title="pencil" aria-hidden="true"></span>
-                                        Editar
-                                    </button>
-                                    <button class="btn btn-outline-danger" role="button" @onclick="(() => Delete_Click(tripulacion))">
-                                        <span class="icon fa-solid fa-trash" title="trash" aria-hidden="true"></span>
-                                        Eliminar
-                                    </button>
-                                </td>
-                            </tr>
+                            <p><em>No existen Registros</em></p>
+                        }
+                        else
+                        {
+                            @foreach (var tripulacion in listTripulacion)
+                            {
+                                <tr>
+                                    <td>@tripulacion.Descripcion</td>
+                                    <td>
+                                        <button class="btn btn-outline-secondary" @onclick="(() => ObtenerTripulacion(tripulacion.IdTripulacion))">
+                                            <span class="icon fa-solid fa-pencil" title="pencil" aria-hidden="true"></span>
+                                            Editar
+                                        </button>
+                                        <button class="btn btn-outline-danger" role="button" @onclick="(() => Delete_Click(tripulacion))">
+                                            <span class="icon fa-solid fa-trash" title="trash" aria-hidden="true"></span>
+                                            Eliminar
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
                         }
                     </tbody>
                 </table>

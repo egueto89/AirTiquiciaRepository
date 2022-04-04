@@ -37,7 +37,7 @@ namespace AirTiquiciaAPP.Server.Controllers
         {
             _logger.LogInformation("Obteniendo un(a) tipoPersona");
             Response.ContentType = "application/json";
-            await _command.Sql("SELECT tp.IdTipoPersona , tp.IdPersona,tp.Tipo,CONCAT(per.Nombre, '  ', per.Apellidos) as NombrePersona FROM TipoPersona tp  INNER JOIN Persona per on tp.IdPersona = per.IdPersona WHERE IdTipoPersona=@idTipoPersona FOR JSON PATH")
+            await _command.Sql("SELECT tp.IdTipoPersona , tp.IdPersona,tp.TipoPer,CONCAT(per.Nombre, '  ', per.Apellidos) as NombrePersona FROM TipoPersona tp  INNER JOIN Persona per on tp.IdPersona = per.IdPersona WHERE IdTipoPersona=@idTipoPersona FOR JSON PATH")
                 .Param("idTipoPersona", idTipoPersona)
                 .Stream(Response.Body, defaultOutput: "[]");
         }
@@ -47,16 +47,16 @@ namespace AirTiquiciaAPP.Server.Controllers
         {
             Response.ContentType = "application/json";
             _logger.LogInformation("Obteniendo  tipoPersona");
-            await _command.Sql("SELECT tp.IdTipoPersona , tp.IdPersona,tp.Tipo,CONCAT(per.Nombre, '  ', per.Apellidos) as NombrePersona FROM TipoPersona tp  INNER JOIN Persona per on tp.IdPersona = per.IdPersona FOR JSON PATH")
+            await _command.Sql("SELECT tp.IdTipoPersona , tp.IdPersona,tp.TipoPer,CONCAT(per.Nombre, '  ', per.Apellidos) as NombrePersona FROM TipoPersona tp  INNER JOIN Persona per on tp.IdPersona = per.IdPersona FOR JSON PATH")
                 .Stream(Response.Body, defaultOutput: "[]");
         }
 
         [HttpPost]
         public async Task InsertarTipoPersona([FromBody] TipoPersona tipoPersona)
         {
-            await _command.Sql("INSERT INTO TipoPersona( IdPersona, Tipo) Values(@idPersona, @tipo)")
+            await _command.Sql("INSERT INTO TipoPersona( IdPersona, TipoPer) Values(@idPersona, @tipo)")
                 .Param("idPersona", tipoPersona.IdPersona)
-                .Param("tipo", tipoPersona.Tipo)
+                .Param("tipo", tipoPersona.TipoPer)
                 .OnError(x => _logger.LogError(x, "Error Insertando TipoPersona"))
                 .Exec();
         }
@@ -66,10 +66,10 @@ namespace AirTiquiciaAPP.Server.Controllers
         {
             await _command.Sql("UPDATE TipoPersona SET " +
                                         "IdPersona =@idPersona," +
-                                        "Tipo=@tipo"+
-                                "WHERE IdTipoPersona=@idTipoPersona")
-                .Param("nombre", tipoPersona.IdPersona)
-                .Param("apellidos", tipoPersona.IdTipoPersona)
+                                        "TipoPer=@tipo" +
+                                " WHERE IdTipoPersona=@idTipoPersona")
+                .Param("idPersona", tipoPersona.IdPersona)
+                .Param("tipo", tipoPersona.TipoPer)
                 .Param("idTipoPersona", tipoPersona.IdTipoPersona)
                 .OnError(x => _logger.LogError(x, "Error Actualizando TipoPersona"))
                 .Exec();

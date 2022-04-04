@@ -17,9 +17,14 @@
                     <DataAnnotationsValidator />
                     <ValidationSummary />
                     <div class="form-group row">
-                        <label for="TipoPersonaSistema" class="col-sm-1 col-form-label">Tipo</label>
+                        <label for="IdPersona" class="col-sm-1 col-form-label">Persona</label>
                         <div class="col-sm-4">
-                            <InputText @bind-Value="tipoPersona.Tipo" class="form-control"></InputText>
+                            <InputSelect class="form-control" @bind-Value="tipoPersona.TipoPer">
+                                @foreach (Tipos tipo in Enum.GetValues( typeof(Tipos)))
+                                    {
+                                    <option value="@tipo">@tipo.DevuelveDescripcion()</option>
+                                    }
+                            </InputSelect>
                         </div>
                     </div>
                     <div class="form-group row">

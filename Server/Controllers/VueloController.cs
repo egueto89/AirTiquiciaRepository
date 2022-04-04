@@ -92,8 +92,9 @@ namespace AirTiquiciaAPP.Server.Controllers
         }
 
         [HttpPost]
-        public async Task InsertarVuelo([FromBody] Vuelo avion)
+        public async Task<IActionResult> InsertarVuelo([FromBody] Vuelo avion)
         {
+            /*
             await _command.Sql("INSERT INTO Vuelo(" +
                                       "IdTipoVuelo, " +
                                       "IdAvion," +
@@ -141,11 +142,14 @@ namespace AirTiquiciaAPP.Server.Controllers
                 .Param("minutosLlegada", avion.MinutosLlegada)
                 .OnError(x => _logger.LogError(x, "Error Insertando Vuelo"))
                 .Exec();
+            */
+            return Ok();
         }
 
         [HttpPut]
-        public async Task ActualizarVuelo([FromBody] Vuelo avion)
+        public async Task<IActionResult> ActualizarVuelo([FromBody] Vuelo avion)
         {
+            /*
             await _command.Sql("UPDATE Vuelo SET "+
                                  "IdTipoVuelo = @idTipoVuelo," +
                                       "IdAvion = @idavion," +
@@ -179,6 +183,9 @@ namespace AirTiquiciaAPP.Server.Controllers
                 .Param("idVuelo", avion.IdVuelo)
                 .OnError(x => _logger.LogError(x, "Error Actualizando Vuelo"))
                 .Exec();
+            */
+
+            return Ok();
         }
  
     }
