@@ -1,0 +1,107 @@
+﻿@page "/listavuelo"
+@using AirTiquiciaAPP.Shared
+@inject HttpClient Http
+@inject NavigationManager navigationManager
+@layout MainPageLayout
+
+
+@if (mostrarVuelos)
+{
+    <h3>Lista de vuelos disponibles</h3>
+
+    @if (vuelosDisponibles == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <button class="btn btn-primary" type="button" @onclick="(() => Regresar())">Regresar</button>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Tipo Vuelo</th>
+                    <th>Avion</th>
+                    <th>Destino</th>
+                    <th>Llegada</th>
+                    <th>Tripulación</th>
+                    <th>Número Vuelo</th>
+                    <th>Fecha Salida</th>
+                    <th>Fecha Llegada</th>
+                    <th>Hora Salida</th>
+                    <th>Minutos Salida</th>
+                    <th>Duración Hora</th>
+                    <th>Duración Minutos</th>
+                    <th>Hora Llegada</th>
+                    <th>Minutos Llegada</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!vuelosDisponibles.Any())
+                {
+                    <p><em>No existen Registros</em></p>
+                }
+                else
+                {
+                    @foreach (var vuelo in vuelosDisponibles)
+                    {
+                        @*@onclick="(()=>ObtenerVuelos(vuelo.IdVuelo))*@
+                        <tr @onclick="(()=>SeleccionVuelo(vuelo))">
+                            <td>@vuelo.TipoVueloDescripcion</td>
+                            <td>@vuelo.AvionDescripcion</td>
+                            <td>@vuelo.DestinoDescripcion</td>
+                            <td>@vuelo.DestinoLlegada</td>
+                            <td>@vuelo.PersoTripu</td>
+                            <td>@vuelo.NumeroVuelo</td>
+                            <td>@vuelo.FechaSalida</td>
+                            <td>@vuelo.FechaLlegada</td>
+                            <td>@vuelo.HoraSalida</td>
+                            <td>@vuelo.MinutosSalida</td>
+                            <td>@vuelo.DuracionHoraVuelo</td>
+                            <td>@vuelo.DuracionMinutosVuelo</td>
+                            <td>@vuelo.HoraLlegada</td>
+                            <td>@vuelo.MinutosLlegada</td>
+                        </tr>
+                    }
+                }
+
+            </tbody>
+        </table>
+    }
+}else
+{
+    <Dato_Pasejero_vuelo vuelo="vueloSeleccionado" cantidadPasajero="busquedaVuelo.CantidadPasajero"></Dato_Pasejero_vuelo>
+}
+
+
+@code {
+
+    [Parameter]
+    public BusquedaVuelo busquedaVuelo { get; set; }
+    private bool mostrarVuelos = true;
+    private List<Vuelo> vuelosDisponibles = new List<Vuelo>();
+    private Vuelo vueloSeleccionado = new Vuelo();
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        //selected element
+        vuelosDisponibles = await Http.GetFromJsonAsync<List<Vuelo>>($"BuscarVuelo/buscarVuelosDisponibles/{busquedaVuelo.IdDestino}/{busquedaVuelo.IdDestinoLlegada}/{busquedaVuelo.FechaSalida.ToString("yyyyMMdd")}");
+
+    }
+
+
+    private void SeleccionVuelo(Vuelo vuelo)
+    {
+        vueloSeleccionado = vuelo;
+        mostrarVuelos = false;
+
+    }
+
+
+    private void Regresar()
+    {
+        navigationManager.NavigateTo($"/", true);
+    }
+
+
+}

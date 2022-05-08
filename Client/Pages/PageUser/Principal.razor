@@ -1,0 +1,251 @@
+﻿@page "/"
+@using AirTiquiciaAPP.Shared
+@inject HttpClient Http
+@layout MainPageLayout
+
+
+@if (esbusqueda)
+{
+    <h1>Busqueda de Vuelos</h1>
+    @if (mostrarMensajes)
+    {
+        <div class="@claseCSS" role="alert">
+            @mensajesValidacion
+        </div>
+    }
+    <div>
+        <EditForm Model="busquedaVuelo"  OnValidSubmit="BuscarVuelos">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-row">
+
+                <InputRadioGroup Value="@busquedaVuelo.TipoViaje" ValueChanged="@((string e) => onChangeTipoVuelo(e))" ValueExpression="() => busquedaVuelo.TipoViaje">
+                    @foreach (var option in tipoVieaje)
+                {
+
+                    <div class="form-check form-check-inline">
+                        <InputRadio Value="option.Key" class="form-check-input" />
+
+                        <label class="form-check-label">@option.Value</label>
+                    </div>
+                }
+            </InputRadioGroup>
+
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="IdDestino">Origen</label>
+                <InputSelect class="form-control" @bind-Value="busquedaVuelo.IdDestino">
+                    <option value="0" selected>Seleccione</option>
+                    @foreach (var destino in listDestino)
+                        {
+                        <option value="@destino.IdDestino">@destino.Nombre</option>
+                        }
+                </InputSelect>
+            </div>
+            <div class="form-group col-md-4">
+                <label for="IdDestinoLlegada">Destino</label>
+                <InputSelect class="form-control" @bind-Value="busquedaVuelo.IdDestinoLlegada">
+                    <option value="0" selected>Seleccione</option>
+                    @foreach (var destino in listDestino)
+                        {
+                        <option value="@destino.IdDestino">@destino.Nombre</option>
+                        }
+                </InputSelect>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="FechaSalida">Salida</label>
+                <InputDate @bind-Value="busquedaVuelo.FechaSalida" class="form-control"></InputDate>
+            </div>
+            <div class="form-group col-md-4">
+                <label for="FechaLlegada">Regreso</label>
+                <InputDate @bind-Value="busquedaVuelo.FechaLlegada" class="form-control" disabled="@idavuelta"></InputDate>
+            </div>
+        </div>
+        <div class="form-row">
+            @* <div class="form-group col-md-4">
+                <label for="tipoPasajero">Pasajero</label>
+                <InputSelect class="form-control" @bind-Value="busquedaVuelo.tipoPasajero">
+                <option value="0" selected>Seleccione</option>
+                @foreach (var tipo in listTipoPasajero)
+                {
+                <option value="@tipo.IdTipoPasajero">@tipo.Descripcion</option>
+                }
+                </InputSelect>
+                </div>*@
+            <div class="form-group col-md-2">
+                <label for="CantidadPasajero">Cantidad Pasajeros</label>
+                <InputNumber @bind-Value="busquedaVuelo.CantidadPasajero" class="form-control"></InputNumber>
+            </div>
+            @*            <div class="form-group col-md-4">
+                <br />
+                <button type="button" class="btn btn-primary" @onclick="(() => addTipoPasajero(busquedaVuelo.tipoPasajero))">
+                <span class="icon fa-solid fa-add"></span>
+                Agregar Pasajero
+                </button>
+
+                </div>
+            *@
+        </div>
+
+        <div class="form-row">
+            <button type="submit" class="btn btn-primary">
+                <span class="icon fa-solid fa-search"></span>
+                Buscar vuelos
+            </button>
+        </div>
+    </EditForm>
+</div>
+}
+else
+{
+    <Lista_vuelo busquedaVuelo="busquedaVuelo"></Lista_vuelo>
+}
+
+@code {
+    /*ValueChanged="@((e) => onChangeTipoVuelo(e))" TValue="string" ValueExpression="() => busquedaVuelo.TipoViaje"*/
+    BusquedaVuelo busquedaVuelo = new BusquedaVuelo();
+    private List<Destino> listDestino = new List<Destino>();
+   // private List<TipoPasajero> listTipoPasajero = new List<TipoPasajero>();
+    Dictionary<string, string> tipoVieaje = new Dictionary<string, string>();
+    bool idavuelta = false;
+    bool esbusqueda = true;
+    private bool mostrarMensajes = false;
+    private string mensajesValidacion = string.Empty;
+    private string claseCSS = string.Empty;
+    private bool edita = false;
+    protected override async Task OnInitializedAsync()
+    {
+        tipoVieaje.Add("idavuelta", "Ida y vuelta");
+        tipoVieaje.Add("ida", "Ida");
+        //selected element
+        listDestino = await Http.GetFromJsonAsync<List<Destino>>("Destino");
+      //  listTipoPasajero = await Http.GetFromJsonAsync<List<TipoPasajero>>("TipoPasajero");
+        busquedaVuelo.TipoViaje = "idavuelta";
+
+    }
+
+    void onChangeTipoVuelo(string e)
+    {
+        busquedaVuelo.TipoViaje = e;
+        if (busquedaVuelo.TipoViaje == "ida")
+            idavuelta = true;
+        else
+            idavuelta = false;
+    }
+
+
+    private void BuscarVuelos()
+    {
+        esbusqueda = false;
+    }
+
+
+    //private void addTipoPasajero(int tipopasajero)
+    //{
+    //    try
+    //    {
+    //        ocultarMensajes();
+    //        if (tipopasajero == 0 || busquedaVuelo.CantidadPasajero == 0)
+    //        {
+    //            Mensaje("Seleccione un tipo de pasajero", "alert alert-danger col-12");
+    //        }
+    //        else
+    //        {
+    //            if (!busquedaVuelo.MisPasajeros.Exists(x => x.tipoPasajero == tipopasajero) && !edita)
+    //            {
+    //                Pasajerovuelo pasajero = new Pasajerovuelo();
+    //                pasajero.CantidadPasajero = busquedaVuelo.CantidadPasajero;
+    //                pasajero.descripcionPasejero = listTipoPasajero.Where(x => x.IdTipoPasajero == tipopasajero).FirstOrDefault().Descripcion;
+    //                pasajero.tipoPasajero = tipopasajero;
+
+    //                busquedaVuelo.MisPasajeros.Add(pasajero);
+    //            }
+    //            else if (edita)
+    //            {
+    //                busquedaVuelo.MisPasajeros.Where(x => x.tipoPasajero == tipopasajero).ToList().ForEach(x=>{
+    //                    x.CantidadPasajero = busquedaVuelo.CantidadPasajero;
+    //                });
+    //            }
+    //            else
+    //            {
+    //                Mensaje("El tipo de pasajero existe, por favor editarlo", "alert alert-warning col-12");
+    //            }
+
+
+    //            StateHasChanged();
+    //        }
+
+
+    //    }
+    //    catch (Exception ex)
+    //    {
+
+    //    }
+    //}
+
+    //private void editTipoPasajero(Pasajerovuelo tipopasajero)
+    //{
+    //    edita = true;
+    //    busquedaVuelo.tipoPasajero = tipopasajero.tipoPasajero;
+    //    busquedaVuelo.CantidadPasajero = tipopasajero.CantidadPasajero;
+    //    StateHasChanged();
+
+    //}
+    private void ocultarMensajes()
+    {
+        mostrarMensajes = false;
+        mensajesValidacion = string.Empty;
+        claseCSS = string.Empty;
+    }
+    private void Mensaje(string mensaje, string clase, bool mostrar = true)
+    {
+        mostrarMensajes = mostrar;
+        mensajesValidacion = mensaje;
+        claseCSS = clase;
+    }
+
+
+
+    /*           <div class="form-group col-md-4">
+                @if (busquedaVuelo.MisPasajeros?.Count > 0)
+                {
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Tipo Pasajero</th>
+                                <th>Cantidad</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var vuelo in busquedaVuelo.MisPasajeros)
+                            {
+                                <tr>
+                                    <td>@vuelo.descripcionPasejero</td>
+                                    <td>@vuelo.CantidadPasajero</td>
+
+                                    <td>
+                                        @* @onclick="(()=>ObtenerVuelos(vuelo.IdVuelo))"*@
+                                        <button class="btn btn-outline-secondary" @onclick="(()=>editTipoPasajero(vuelo))">
+                                            <span class="icon fa-solid fa-pencil" title="pencil" aria-hidden="true"></span>
+                                            Editar
+                                        </button>
+                                        @*@onclick="(()=>DeleteTipoPasajero(vuelo))"*@
+                                        <button class="btn btn-outline-danger" vueloe="button" >
+                                            <span class="icon fa-solid fa-trash" title="trash" aria-hidden="true"></span>
+                                            Eliminar
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+
+
+                        </tbody>
+                    </table>
+                }
+            </div>*/
+}

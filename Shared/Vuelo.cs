@@ -68,6 +68,10 @@ namespace AirTiquiciaAPP.Shared
         [Range(0, 60, ErrorMessage = "Los minutos de llegada son requeridos")]
         public Int16 MinutosLlegada { get; set; }
 
+        [Required(ErrorMessage = "El precio es requeridos")]
+
+        [Range(1, 9999999999, ErrorMessage = "El precio es  requeridos")]
+        public decimal Precio { get; set; }
 
         #region descripcion de llaves
 

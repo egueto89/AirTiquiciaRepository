@@ -32,6 +32,44 @@ else
             </InputSelect>
         </div>
     </div>
+        <div class="form-group row">
+        <label for="IdTipoVuelo" class="col-sm-2 col-form-label">Avi&oacute;n</label>
+        <div class="col-sm-4">
+            <InputSelect class="form-control" @bind-Value="avion.IdAvion">
+                <option value="0" selected>Seleccione</option>
+                @foreach (var avion in aviones)
+                {
+                <option value="@avion.IdAvion">@avion.Descripcion</option>
+                }
+            </InputSelect>
+        </div>
+    </div>
+
+        <div class="form-group row">
+        <label for="IdTipoVuelo" class="col-sm-2 col-form-label">Desde</label>
+        <div class="col-sm-4">
+            <InputSelect class="form-control" @bind-Value="avion.IdDestino">
+                <option value="0" selected>Seleccione</option>
+                @foreach (var destino in listDestino)
+                {
+                <option value="@destino.IdDestino">@destino.Nombre</option>
+                }
+            </InputSelect>
+        </div>
+    </div>
+      <div class="form-group row">
+        <label for="IdTipoVuelo" class="col-sm-2 col-form-label">Hacia</label>
+        <div class="col-sm-4">
+            <InputSelect class="form-control" @bind-Value="avion.IdDestinoLlegada">
+                <option value="0" selected>Seleccione</option>
+                @foreach (var destino in listDestino)
+                {
+                <option value="@destino.IdDestino">@destino.Nombre</option>
+                }
+            </InputSelect>
+        </div>
+    </div>
+
     <div class="form-group row">
         <label for="FechaSalida" class="col-sm-2 col-form-label">Fecha Salida</label>
         <div class="col-sm-4">
@@ -80,6 +118,12 @@ else
             <InputNumber @bind-Value="avion.MinutosLlegada" class="form-control"></InputNumber>
         </div>
     </div>
+      <div class="form-group row">
+        <label for="MinutosLlegada" class="col-sm-2 col-form-label">Precio vuelo</label>
+        <div class="col-sm-4">
+            <InputNumber @bind-Value="avion.Precio" class="form-control"></InputNumber>
+        </div>
+    </div>
 
     <button type="submit" class="btn btn-primary">
         @if (avion.IdVuelo == 0)
@@ -106,23 +150,26 @@ else
     public int id { get; set; }
 
     Vuelo avion = new Vuelo();
-    private List<Vuelo> avions = new List<Vuelo>();
+    private List<Vuelo> vuelos = new List<Vuelo>();
     private List<TipoVuelo> listTipovion = new List<TipoVuelo>();
     private string MensajeBoton = " Crear Vuelo" ;
+    private List<Avion> aviones = new List<Avion>();
+    private List<Destino> listDestino = new List<Destino>();
 
     protected override async Task OnInitializedAsync()
     {
 
         if (id != 0)
         {
-            avions = await Http.GetFromJsonAsync<List<Vuelo>>($"Vuelo/{id}");
-            avion = avions.FirstOrDefault();
+            vuelos = await Http.GetFromJsonAsync<List<Vuelo>>($"Vuelo/{id}");
+            avion = vuelos.FirstOrDefault();
             MensajeBoton = " Editar Vuelo";
         }
 
         //selected element
         listTipovion = await Http.GetFromJsonAsync<List<TipoVuelo>>("TipoVuelo");
-
+        aviones= await Http.GetFromJsonAsync<List<Avion>>("Avion");
+        listDestino = await Http.GetFromJsonAsync<List<Destino>>("Destino");
     }
 
     private async void CreaOActualizaVuelo()
@@ -135,7 +182,7 @@ else
             if (response.IsSuccessStatusCode)
             {
 
-                navigationManager.NavigateTo($"aviones");
+                navigationManager.NavigateTo($"vuelos");
             }
         }
         else
@@ -143,7 +190,7 @@ else
             response = await Http.PutAsJsonAsync<Vuelo>("Vuelo", avion);
             if (response.IsSuccessStatusCode)
             {
-                navigationManager.NavigateTo($"aviones");
+                navigationManager.NavigateTo($"vuelos");
             }
         }
     }

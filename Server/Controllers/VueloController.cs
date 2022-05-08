@@ -38,29 +38,29 @@ namespace AirTiquiciaAPP.Server.Controllers
             _logger.LogInformation("Obteniendo un avion");
             Response.ContentType = "application/json";
             await _command.Sql("SELECT " +
-                                      "v.IdVuelo," +
-                                      "v.IdTipoVuelo," +
-                                      "v.IdAvion," +
-                                      "v.IdDestino," +
-                                      "v.IdDestinoLlegada," +
-                                      "v.IdPersonaTripulacion," +
-                                      "v.NumeroVuelo," +
-                                      "v.FechaSalida, " +
-                                      "v.FechaLLegada, " +
-                                      "v.HoraSalida, " +
-                                      "v.MinutosSalida, " +
-                                      "v.DuracionHoraVuelo, " +
-                                      "v.DuracionMinutosVuelo, " +
-                                      "v.HoraLLegada, " +
-                                      "v.MinutosLLegada," +
-                                      "tv.Descripcion AS TipoVueloDescripcion," +
-                                      "av.Descripcion AS AvionDescripcion," +
-                                      "de.Nombre AS DestinoDescripcion," +
-                                      "de.Nombre AS DestinoLlegada" +
-                " FROM Vuelo v INNER JOIN TipoVuelo tv ON v.IdTipoVuelo = tv.IdTipoVuelo" +
-                " INNER JOIN Avion av ON v.IdVuelo = av.IdVuelo" +
-                " INNER JOIN Destino de ON v.IdDestino = de.IdDestino" +
-                "INNER JOIN Destino des ON v.IdDestinoLlegada = de.IdDestino" +
+                                    "v.IdVuelo," +
+                                    "v.IdTipoVuelo," +
+                                    "v.IdAvion," +
+                                    "v.IdDestino," +
+                                    "v.IdDestinoLlegada," +
+                                    // "v.IdPersonaTripulacion," +
+                                    "v.NumeroVuelo," +
+                                    "v.FechaSalida, " +
+                                    "v.FechaLLegada, " +
+                                    "v.HoraSalida, " +
+                                    "v.MinutosSalida, " +
+                                    "v.DuracionHoraVuelo, " +
+                                    "v.DuracionMinutosVuelo, " +
+                                    "v.HoraLLegada, " +
+                                    "v.MinutosLLegada," +
+                                    "tv.Descripcion AS TipoVueloDescripcion," +
+                                    "av.Descripcion AS AvionDescripcion," +
+                                    "de.Nombre AS DestinoDescripcion," +
+                                    "des.Nombre AS DestinoLlegada , v.Precio" +
+              " FROM Vuelo v INNER JOIN TipoVuelo tv ON v.IdTipoVuelo = tv.IdTipoVuelo " +
+              " INNER JOIN Avion av ON v.IdAvion = av.IdAvion " +
+              " INNER JOIN Destino de ON v.IdDestino = de.IdDestino " +
+              "INNER JOIN Destino des ON v.IdDestinoLlegada =des.IdDestino  " +
                 " WHERE IdVuelo=@idVuelo FOR JSON PATH")
                 .Param("idVuelo", idVuelo)
                 .Stream(Response.Body, defaultOutput: "[]");
@@ -72,35 +72,43 @@ namespace AirTiquiciaAPP.Server.Controllers
             Response.ContentType = "application/json";
             _logger.LogInformation("Obteniendo los avion");
             await _command.Sql("SELECT " +
-                                       "IdVuelo," +
-                                      "IdTipoVuelo, " +
-                                      "IdAvion," +
-                                      "IdDestino, " +
-                                      "IdDestinoLlegada, " +
-                                      "IdPersonaTripulacion, " +
-                                      "NumeroVuelo, " +
-                                      "FechaSalida, " +
-                                      "FechaLLegada, " +
-                                      "HoraSalida, " +
-                                      "MinutosSalida, " +
-                                      "DuracionHoraVuelo, " +
-                                      "DuracionMinutosVuelo, " +
-                                      "HoraLLegada, " +
-                                      "MinutosLLegada" +
-                " FROM Vuelo FOR JSON PATH")
+                                    "v.IdVuelo," +
+                                    "v.IdTipoVuelo," +
+                                    "v.IdAvion," +
+                                    "v.IdDestino," +
+                                    "v.IdDestinoLlegada," +
+                                    // "v.IdPersonaTripulacion," +
+                                    "v.NumeroVuelo," +
+                                    "v.FechaSalida, " +
+                                    "v.FechaLLegada, " +
+                                    "v.HoraSalida, " +
+                                    "v.MinutosSalida, " +
+                                    "v.DuracionHoraVuelo, " +
+                                    "v.DuracionMinutosVuelo, " +
+                                    "v.HoraLLegada, " +
+                                    "v.MinutosLLegada," +
+                                    "tv.Descripcion AS TipoVueloDescripcion," +
+                                    "av.Descripcion AS AvionDescripcion," +
+                                    "de.Nombre AS DestinoDescripcion," +
+                                    "des.Nombre AS DestinoLlegada, v.Precio " +
+              " FROM Vuelo v INNER JOIN TipoVuelo tv ON v.IdTipoVuelo = tv.IdTipoVuelo " +
+              " INNER JOIN Avion av ON v.IdAvion = av.IdAvion " +
+              " INNER JOIN Destino de ON v.IdDestino = de.IdDestino " +
+              "INNER JOIN Destino des ON v.IdDestinoLlegada =des.IdDestino  " +
+              " FOR JSON PATH")
                 .Stream(Response.Body, defaultOutput: "[]");
         }
 
         [HttpPost]
-        public async Task<IActionResult> InsertarVuelo([FromBody] Vuelo avion)
+        public async Task InsertarVuelo([FromBody] Vuelo avion)
         {
-            /*
+
             await _command.Sql("INSERT INTO Vuelo(" +
                                       "IdTipoVuelo, " +
                                       "IdAvion," +
                                       "IdDestino, " +
                                       "IdDestinoLlegada, " +
-                                      "IdPersonaTripulacion, " +
+                                    //  "IdPersonaTripulacion, " +
                                       "NumeroVuelo, " +
                                       "FechaSalida, " +
                                       "FechaLLegada, " +
@@ -109,13 +117,14 @@ namespace AirTiquiciaAPP.Server.Controllers
                                       "DuracionHoraVuelo, " +
                                       "DuracionMinutosVuelo, " +
                                       "HoraLLegada, " +
-                                      "MinutosLLegada" +
+                                      "MinutosLLegada, " +
+                                      "Precio"+
                 ") Values(" +
                                       "@idTipoVuelo, " +
                                       "@idavion," +
                                       "@iddestino, " +
                                       "@iddestinoLlegada, " +
-                                      "@idpersonaTripulacion, " +
+                                     // "@idpersonaTripulacion, " +
                                       "@numeroVuelo, " +
                                       "@fechaSalida, " +
                                       "@fechaLLegada, " +
@@ -124,13 +133,14 @@ namespace AirTiquiciaAPP.Server.Controllers
                                       "@duracionHoraVuelo, " +
                                       "@duracionMinutosVuelo, " +
                                       "@horaLLegada, " +
-                                      "@minutosLLegada" +
+                                      "@minutosLLegada ," +
+                                      "@Precio"+
                 ")")
                 .Param("idTipoVuelo", avion.IdTipoVuelo)
                 .Param("idavion", avion.IdAvion)
                 .Param("iddestino", avion.IdDestino)
                 .Param("iddestinoLlegada", avion.IdDestinoLlegada)
-                .Param("idpersonaTripulacion", avion.IdPersonaTripulacion)
+               // .Param("idpersonaTripulacion", avion.IdPersonaTripulacion)
                 .Param("numeroVuelo", avion.NumeroVuelo)
                 .Param("fechaSalida", avion.FechaSalida)
                 .Param("fechaLlegada", avion.FechaLlegada)
@@ -140,37 +150,39 @@ namespace AirTiquiciaAPP.Server.Controllers
                 .Param("duracionMinutosVuelo", avion.DuracionMinutosVuelo)
                 .Param("horaLlegada", avion.HoraLlegada)
                 .Param("minutosLlegada", avion.MinutosLlegada)
+                .Param("Precio", avion.Precio)
+                
                 .OnError(x => _logger.LogError(x, "Error Insertando Vuelo"))
                 .Exec();
-            */
-            return Ok();
+
+
         }
 
         [HttpPut]
-        public async Task<IActionResult> ActualizarVuelo([FromBody] Vuelo avion)
+        public async Task  ActualizarVuelo([FromBody] Vuelo avion)
         {
-            /*
             await _command.Sql("UPDATE Vuelo SET "+
                                  "IdTipoVuelo = @idTipoVuelo," +
                                       "IdAvion = @idavion," +
                                       "IdDestino=@iddestino," +
                                       "IdDestinoLlegada = @iddestinoLlegada," +
-                                      "IdPersonaTripulacion =@idpersonaTripulacion," +
+                                     // "IdPersonaTripulacion =@idpersonaTripulacion," +
                                       "NumeroVuelo = @numeroVuelo," +
                                       "FechaSalida =@fechaSalida," +
                                       "FechaLLegada = @fechaLlegada," +
                                       "HoraSalida = @horaSalida," +
-                                      "MinutosSalida = @horaSalida," +
+                                      "MinutosSalida = @minutosSalida," +
                                       "DuracionHoraVuelo = @duracionHoraVuelo," +
                                       "DuracionMinutosVuelo = @duracionMinutosVuelo," +
                                       "HoraLLegada =@horaLlegada," +
-                                      "MinutosLLegada = minutosLlegada" +
+                                      "MinutosLLegada = minutosLlegada, " +
+                                      "Precio=@Precio " +
                                "WHERE IdVuelo=@idVuelo")
                  .Param("idTipoVuelo", avion.IdTipoVuelo)
                 .Param("idavion", avion.IdAvion)
                 .Param("iddestino", avion.IdDestino)
                 .Param("iddestinoLlegada", avion.IdDestinoLlegada)
-                .Param("idpersonaTripulacion", avion.IdPersonaTripulacion)
+                //.Param("idpersonaTripulacion", avion.IdPersonaTripulacion)
                 .Param("numeroVuelo", avion.NumeroVuelo)
                 .Param("fechaSalida", avion.FechaSalida)
                 .Param("fechaLlegada", avion.FechaLlegada)
@@ -181,11 +193,10 @@ namespace AirTiquiciaAPP.Server.Controllers
                 .Param("horaLlegada", avion.HoraLlegada)
                 .Param("minutosLlegada", avion.MinutosLlegada)
                 .Param("idVuelo", avion.IdVuelo)
+                .Param("Precio", avion.Precio)
                 .OnError(x => _logger.LogError(x, "Error Actualizando Vuelo"))
                 .Exec();
-            */
 
-            return Ok();
         }
  
     }
