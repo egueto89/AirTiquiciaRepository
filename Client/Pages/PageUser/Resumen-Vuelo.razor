@@ -5,13 +5,192 @@
 @inject HttpClient Http
 @layout MainPageLayout
 
-<p>@identificaciones</p>
+@if (mostrarMensajes)
+{
+    <div class="@claseCSS" role="alert">
+        @mensajesValidacion
+    </div>
+}
+
+@if (resumenes?.Count > 0)
+{
+    <div class="alert alert-success" role="alert">
+        <h4 class="alert-heading">Total Apagar</h4>
+        <p> EL total a pagar por su tiquite de vuelo es de @totalPagar</p>
+
+    </div>
+
+    foreach (var item in resumenes)
+    {
+        <div class="card">
+            <div class="card-header">
+                Vuelo
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">N&uacute;mero de vuelo @item.NumeroVuelo</h5>
+                <div>
+                    <p class="card-text">Hora de Salida: @item.HoraSalida - Hora Llegada:@item.HoraLlegada </p>
+                </div>
+                <div>
+                    <p class="card-text">Duraci&oacute;n: @item.DuracionHoraVuelo Horas</p>
+                </div>
+                <div>
+                    <p class="card-text">Destino Salida: @item.DestinoSalida -  Destino Llegada:@item.DestinoLlegada </p>
+                </div>
+                <div>
+                    <p class="card-text">Precio vuelo: $@item.Precio </p>
+                </div>
+                <div>
+                    <p class="card-text">Cantidad de Equipaje: @item.CantidadEquipaje  - Precio Equipaje: $@item.PrecioEquipaje </p>
+                </div>
+
+                <div>
+                    <p class="card-text">Fecha Compra: @item.FechaCompra.ToString("dd-MM-yyyy") </p>
+                </div>
+                <div>
+                    <p class="card-text">Avi&oacute;n: @item.Aviondescripcion  - Aereol&iacute;nea: @item.Aereolina </p>
+                </div>
+                <div>
+                    <p class="card-text">Pasajero: @item.Nombre @item.Apellidos Correo:@item.Correo </p>
+                </div>
+            </div>
+        </div>
+
+    }
+    <br />
+    <button type="button" class="btn btn-primary" @onclick="@Confirmacionvuelo">
+
+        <span class="icon fa-solid fa-check-double"></span>
+        Aceptar los términos y condiciones
+    </button>
+
+}
+
+
+
 @code {
 
     [Parameter]
     public string identificaciones { get; set; }
-     [Parameter]
-    public string  numeroVuelo { get; set; }
+    [Parameter]
+    public string numeroVuelo { get; set; }
 
+    public List<ResumenVueloDTO> resumenes = new List<ResumenVueloDTO>();
+
+    private DatosCorreo datosCorreo = new DatosCorreo();
+
+    private bool mostrarMensajes = false;
+    private string mensajesValidacion = string.Empty;
+    private string claseCSS = string.Empty;
+
+    public decimal totalPagar = 0;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        resumenes = await Http.GetFromJsonAsync<List<ResumenVueloDTO>>($"ResumenVuelo/{identificaciones}/{numeroVuelo}");
+        //vuelos = await Http.GetFromJsonAsync<List<Vuelo>>($"vuelo/ObtenerVueloPorNumero/{numvuelo}");
+        if (resumenes?.Count > 0)
+        {
+            totalPagar = resumenes.Sum(x => x.Precio + (x.CantidadEquipaje * x.PrecioEquipaje));
+        }
+        else
+        {
+            ocultarMensajes();
+            Mensaje("Ocurrió un error al cargar o crear el resumen de  vuelo", "alert alert-danger col-12");
+        }
+
+    }
+
+    private void ocultarMensajes()
+    {
+        mostrarMensajes = false;
+        mensajesValidacion = string.Empty;
+        claseCSS = string.Empty;
+    }
+    private void Mensaje(string mensaje, string clase, bool mostrar = true)
+    {
+        mostrarMensajes = mostrar;
+        mensajesValidacion = mensaje;
+        claseCSS = clase;
+    }
+
+    private async Task Confirmacionvuelo()
+    {
+        HttpResponseMessage response;
+        ocultarMensajes();
+        StringBuilder correo = new StringBuilder();
+        
+         Mensaje("Enviando correos Favor espere", "alert alert-primary col-12");
+
+        foreach (var item in resumenes)
+        {
+            correo.Append($@"<div style='position: relative;
+                    flex-direction:column;
+                    min-width: 0;
+                    word-wrap: break-word;
+                    background-color: #fff;
+                    background-clip: border-box;
+                    border: 1px solid rgba(0,0,0,.125);
+                    border-radius: 0.25rem;'>
+            <div style='padding: 0.75rem 1.25rem;
+                        margin-bottom: 0;
+                        background-color: rgba(0,0,0,.03);
+                        border-bottom: 1px solid rgba(0,0,0,.125);'>
+                Vuelo
+            </div>
+            <div style='flex: 1 1 auto;
+                    padding: 1.25rem;'>
+                <h2 class='card-title'>N&uacute;mero de vuelo {item.NumeroVuelo}</h2s>
+                <div>
+                    <p class='card-text'>Hora de Salida: {item.HoraSalida} - Hora Llegada:{ item.HoraLlegada} </p>
+                </div>
+                <div>
+                    <p class='card-text'>Duraci&oacute;n: {item.DuracionHoraVuelo} Horas </p>
+                </div>
+                <div>
+                    <p class='card-text'>Destino Salida: {item.DestinoSalida} -  Destino Llegada: {item.DestinoLlegada} </p>
+                </div>
+                <div>
+                    <p class='card-text'>Precio vuelo: ${item.Precio} </p>
+                </div>
+                <div>
+                    <p class='card-text'>Cantidad de Equipaje: {item.CantidadEquipaje}  - Precio Equipaje: ${item.PrecioEquipaje} </p>
+                </div>
+
+                <div>
+                    <p class='card-text'>Fecha Compra: {item.FechaCompra.ToShortDateString()} </p>
+                </div>
+                <div>
+                    <p class='card-text'>Avi&oacute;n: {item.Aviondescripcion}  - Aereol&iacute;nea: {item.Aereolina} </p>
+                </div>
+                <div>
+                    <p class='card-text'>Pasajero: {item.Nombre}  {item.Apellidos}  Correo:{ item.Correo}  </p>
+                </div>
+            </div>
+        </div>");
+
+
+        }
+
+        foreach (var item in resumenes)
+        {
+            datosCorreo.Correo = item.Correo;
+            datosCorreo.CuerpoCorreo = correo.ToString();
+
+            response = await Http.PostAsJsonAsync<DatosCorreo>("ResumenVuelo", datosCorreo);
+            int v = 1;
+            if (response.IsSuccessStatusCode)
+            {
+                var resgistros = await response.Content.ReadFromJsonAsync<int>();
+                if (resgistros == 0)
+                    Mensaje("Correo enviado con éxito", "alert alert-success col-12");
+                else
+                    Mensaje("Ocurrió un error al enviar el correo", "alert alert-danger col-12");
+
+            }
+        }
+
+    }
 
 }

@@ -1,3 +1,5 @@
+using AirTiquiciaAPP.Server.Services;
+using AirTiquiciaAPP.Shared;
 using Belgrade.SqlClient;
 using Belgrade.SqlClient.SqlDb;
 using Microsoft.AspNetCore.Builder;
@@ -29,7 +31,10 @@ namespace AirTiquiciaAPP.Server
             services.AddTransient<ICommand>(x=> new Command(Configuration.GetConnectionString("ConexionBD")));
             services.AddControllersWithViews();
             services.AddRazorPages();
-           
+
+            services.Configure<SmtpSetttings>(Configuration.GetSection("SmtpSetttings"));
+            services.AddSingleton<IEmailSenderService, EmailSenderService>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

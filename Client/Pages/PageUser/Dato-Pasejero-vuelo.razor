@@ -220,7 +220,7 @@ else
             mostrarPasajeros = true;
             SumaTotalTiquiteVuelo();
 
-            response = await Http.PostAsJsonAsync<PasajeroVueloDTO>("Pasajero/InsertaPasajeroVuelo", pasajero);
+           response = await Http.PostAsJsonAsync<PasajeroVueloDTO>("Pasajero/InsertaPasajeroVuelo", pasajero);
             pasajero = new PasajeroVueloDTO();
             StateHasChanged();
         }
@@ -259,13 +259,13 @@ else
         {
             foreach(var item in pasajeros)
             {
-                v.Append("'" + item .Identificacion+ "'");
+                v.Append(item .Identificacion);
                 v.Append(",");
             }
           
              //Mensaje(v.ToString().Remove(v.Length-1), "alert alert-warning col-12");
 
-             navigationManager.NavigateTo($"resumen/{v.ToString().Remove(v.Length-1)}");
+             navigationManager.NavigateTo($"resumen/{v.ToString().Remove(v.Length-1)}/{numvuelo}");
         }
     }
 }
