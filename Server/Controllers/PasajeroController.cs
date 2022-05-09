@@ -1,4 +1,5 @@
 ﻿using AirTiquiciaAPP.Shared;
+using AirTiquiciaAPP.Shared.DTOs;
 using Belgrade.SqlClient;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -89,6 +90,35 @@ namespace AirTiquiciaAPP.Server.Controllers
                                 INNER JOIN TipoPersona tp ON pe.IdPersona = tp.IdPersona
                                 WHERE TP.TipoPer=2 FOR JSON PATH")
                 .Stream(Response.Body, defaultOutput: "[]");
+        }
+
+
+        [HttpPost("InsertaPasajeroVuelo")]
+        public async Task InsertaPasajeroVuelo([FromBody] PasajeroVueloDTO pasajero)
+        {
+            Exception exception = new Exception();
+                await _command.Proc("InsertarDatosVuelo")
+                .Param("Nombre", pasajero.Nombre)
+                .Param("Apellidos", pasajero.Apellidos)
+                .Param("Telefono", pasajero.Telefono)
+                .Param("Direccion", pasajero.Direccion)
+                .Param("Correo", pasajero.Correo)
+                .Param("Identificacion", pasajero.Identificacion)
+                .Param("CantidadEquipaje", pasajero.cantidadEquipaje)
+                .Param("TipoPasajero", pasajero.TipoPasajero)
+                .Param("NumeroVuelo", pasajero.numeroVuelo)
+                .Param("IdPesoEquipaje", pasajero.IdPesoEquipaje)
+                 
+                .OnError(x => {
+
+                    _logger.LogError(x, "Error Insertando Pasajero");
+                    exception = x;
+                    
+                    })
+                .Exec();
+
+            
+
         }
     }
 }

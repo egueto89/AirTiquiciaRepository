@@ -35,6 +35,9 @@ namespace AirTiquiciaAPP.Shared.DTOs
         [RegularExpression(@"[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}", ErrorMessage = "Correo electrónico no válido")]
         public string Correo { get; set; }
 
+        [Required(ErrorMessage = "La Identificación es requerida")]
+        public string Identificacion { get; set; }
+
 
         #region Pasajero
 
@@ -50,7 +53,11 @@ namespace AirTiquiciaAPP.Shared.DTOs
 
         [Range(1, int.MaxValue, ErrorMessage = "El Peso del Equipaje es requerida")]
         public int IdPesoEquipaje { get; set; }
+        public decimal precioEquipaje { get; set; }
+        public int pesoEquipaje { get; set; }
 
+
+        public string numeroVuelo { get; set; }
         #endregion
 
 

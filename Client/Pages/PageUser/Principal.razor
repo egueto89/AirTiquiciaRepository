@@ -1,6 +1,7 @@
 ﻿@page "/"
 @using AirTiquiciaAPP.Shared
 @inject HttpClient Http
+@inject NavigationManager navigationManager
 @layout MainPageLayout
 
 
@@ -102,7 +103,7 @@
 }
 else
 {
-    <Lista_vuelo busquedaVuelo="busquedaVuelo"></Lista_vuelo>
+   @* <Lista_vuelo busquedaVuelo="busquedaVuelo"></Lista_vuelo>*@
 }
 
 @code {
@@ -140,7 +141,8 @@ else
 
     private void BuscarVuelos()
     {
-        esbusqueda = false;
+        navigationManager.NavigateTo($"listavuelo/{busquedaVuelo.IdDestino}/{busquedaVuelo.IdDestinoLlegada}/{busquedaVuelo.FechaSalida.ToString("yyyyMMdd")}/{busquedaVuelo.CantidadPasajero}");
+        //esbusqueda = false;
     }
 
 

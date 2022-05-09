@@ -1,69 +1,271 @@
-﻿@page "/datoPasajeroVuelo"
+﻿@page "/datoPasajeroVuelo/{numvuelo}/{cantidadPasajero:int}"
 @using AirTiquiciaAPP.Shared
 @using AirTiquiciaAPP.Shared.DTOs
+@using System.Text;
 @inject HttpClient Http
+@inject NavigationManager navigationManager
 @layout MainPageLayout
 
 
 
-<h3>Dato_Pasejero_vuelo</h3>
- <EditForm Model="pasajero">
-                    <DataAnnotationsValidator />
-                    <ValidationSummary />
-                    <div class="form-group row">
-                        <label for="Descripcion" class="col-sm-1 col-form-label">Nombre</label>
-                        <div class="col-sm-4">
-                            <InputText @bind-Value="pasajero.Nombre" class="form-control"></InputText>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="Apellidos" class="col-sm-1 col-form-label">Apellidos</label>
-                        <div class="col-sm-4">
-                            <InputText @bind-Value="pasajero.Apellidos" class="form-control"></InputText>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="Telefono" class="col-sm-1 col-form-label">Tel&eacute;fono</label>
-                        <div class="col-sm-4">
-                            <InputText @bind-Value="pasajero.Telefono" class="form-control"></InputText>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="Direccion" class="col-sm-1 col-form-label">Direcci&oacute;n</label>
-                        <div class="col-sm-4">
-                            <InputText @bind-Value="pasajero.Direccion" class="form-control"></InputText>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="Correo" class="col-sm-1 col-form-label">Correo</label>
-                        <div class="col-sm-4">
-                            <InputText @bind-Value="pasajero.Correo" class="form-control"></InputText>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="cantidadEquipaje" class="col-sm-1 col-form-label">Cantidad Equipaje</label>
-                        <div class="col-sm-4">
-                            <InputNumber @bind-Value="pasajero.cantidadEquipaje" class="form-control"></InputNumber>
-                        </div>
-                    </div>
-                      <div class="form-group row">
-                        <label for="TipoPasajero" class="col-sm-1 col-form-label">Tipo Pasajero</label>
-                        <div class="col-sm-4">
-                            <InputText @bind-Value="pasajero.TipoPasajero" class="form-control"></InputText>
-                        </div>
-                    </div>
-                    <button type="submit" class="btn btn-primary">
+<h3>Datos Pasajero</h3>
+  @if (mostrarMensajes)
+    {
+        <div class="@claseCSS" role="alert">
+            @mensajesValidacion
+        </div>
+    }
 
-                            <span class="icon fa-solid fa-plus-square"></span>
-                           Agregar Pasajero
-                    </button>
-                </EditForm>
+<div class="form-group row">
+        <p>Costo del vuelo, cambiara seg&uacute;n cantidad de equipaje y peso</p>
+        <div class="col-sm-4">
+            $ @sumaTotalVuelo
+        </div>
+    </div>
+<EditForm Model="pasajero" OnValidSubmit="AgregarPasajero">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="form-group row">
+        <label for="Descripcion" class="col-sm-1 col-form-label">Nombre</label>
+        <div class="col-sm-4">
+            <InputText @bind-Value="pasajero.Nombre" class="form-control"></InputText>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="Apellidos" class="col-sm-1 col-form-label">Apellidos</label>
+        <div class="col-sm-4">
+            <InputText @bind-Value="pasajero.Apellidos" class="form-control"></InputText>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="Identificacion" class="col-sm-1 col-form-label">Identificaci&oacute;n</label>
+        <div class="col-sm-4">
+            <InputText @bind-Value="pasajero.Identificacion" class="form-control"></InputText>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="Telefono" class="col-sm-1 col-form-label">Tel&eacute;fono</label>
+        <div class="col-sm-4">
+            <InputText @bind-Value="pasajero.Telefono" class="form-control"></InputText>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="Direccion" class="col-sm-1 col-form-label">Direcci&oacute;n</label>
+        <div class="col-sm-4">
+            <InputText @bind-Value="pasajero.Direccion" class="form-control"></InputText>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="Correo" class="col-sm-1 col-form-label">Correo</label>
+        <div class="col-sm-4">
+            <InputText @bind-Value="pasajero.Correo" class="form-control"></InputText>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="cantidadEquipaje" class="col-sm-1 col-form-label">Cantidad Equipaje</label>
+        <div class="col-sm-4">
+            <InputNumber @bind-Value="pasajero.cantidadEquipaje" class="form-control"></InputNumber>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="TipoPasajero" class="col-sm-1 col-form-label">Tipo Pasajero</label>
+        <div class="col-sm-4">
+            <InputText @bind-Value="pasajero.TipoPasajero" class="form-control"></InputText>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label for="IdPesoEquipaje" class="col-sm-1 col-form-label">Peso Equipaje</label>
+        <div class="col-sm-4">
+            <InputSelect class="form-control" ValueExpression="@(()=>pasajero.IdPesoEquipaje)"   Value="@pasajero.IdPesoEquipaje" ValueChanged="@((int value) => OnSelectPeso(value))">
+                <option value="0" selected>Seleccione</option>
+                @foreach (var peso in listPesoEquipaje)
+                {
+                    <option value="@peso.IdPesoEquipaje">@peso.Peso Kg</option>
+                }
+            </InputSelect>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+
+        <span class="icon fa-solid fa-plus-square"></span>
+        Agregar Pasajero
+    </button>
+            <button type="button" class="btn btn-primary" @onclick="@IrAResumen">
+
+        <span class="icon fa-solid fa-plane"></span>
+       Resumen Vuelo
+    </button>
+</EditForm>
+      <br />
+        <br />
+@if(mostrarPasajeros)
+{
+    @if (pasajeros == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Tel&eacute;fono</th>
+                <th>Direcci&oacute;n</th>
+                <th>Correo</th>
+                <th>Cantidad Maleta</th>
+                <th>Peso</th>
+                <th>Precio</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (!pasajeros.Any())
+            {
+                <p><em>No existen Registros</em></p>
+            }
+            else
+            {
+                @foreach (var persona in pasajeros)
+                {
+                    <tr>
+                        <td>@persona.Nombre</td>
+                        <td>@persona.Apellidos</td>
+                        <td>@persona.Telefono</td>
+                        <td>@persona.Direccion</td>
+                        <td>@persona.Correo</td>
+                        <td>@persona.cantidadEquipaje</td>
+                        <td>@persona.pesoEquipaje</td>
+                        <td>@persona.precioEquipaje</td>
+                        <td>
+                        </td>
+                    </tr>
+                }
+            }
+
+        </tbody>
+    </table>
+}
+
+}
 
 @code {
-    [Parameter]
-    public Vuelo vuelo { get; set; }
+    //[Parameter]
+    //public Vuelo vuelo { get; set; }
     [Parameter]
     public int cantidadPasajero { get; set; }
 
+    [Parameter]
+    public string numvuelo { get; set; }
+
     PasajeroVueloDTO pasajero = new PasajeroVueloDTO();
+    public Vuelo vuelo = new Vuelo();
+    List<Vuelo> vuelos = new List<Vuelo>();
+    List<PasajeroVueloDTO> pasajeros = new List<PasajeroVueloDTO>();
+    List<PesoEquipaje> listPesoEquipaje = new List<PesoEquipaje>();
+    PesoEquipaje pesoEquipaje = new PesoEquipaje();
+    public decimal sumaTotalVuelo = 0;
+    bool mostrarPasajeros = false;
+    int bandera = 0;
+
+    private bool mostrarMensajes = false;
+    private string mensajesValidacion = string.Empty;
+    private string claseCSS = string.Empty;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        listPesoEquipaje = await Http.GetFromJsonAsync<List<PesoEquipaje>>("PesoEquipaje");
+        vuelos = await Http.GetFromJsonAsync<List<Vuelo>>($"vuelo/ObtenerVueloPorNumero/{numvuelo}");
+        if(vuelos?.Count >0)
+        {
+            vuelo = vuelos.FirstOrDefault();
+            sumaTotalVuelo = vuelo.Precio;
+        }
+
+    }
+
+
+    private void SumaTotalTiquiteVuelo()
+    {
+        sumaTotalVuelo = 0;
+        decimal temp =0;
+        pasajeros.ForEach(x =>
+        {
+            temp+= x.precioEquipaje;
+        });
+        //pasajero.cantidadEquipaje * pesoEquipaje.Precio)*bandera
+        sumaTotalVuelo =((vuelo.Precio *bandera) + (temp));
+    }
+
+    void OnSelectPeso(int value)
+    {
+        pasajero.IdPesoEquipaje = value;
+        pesoEquipaje = listPesoEquipaje.Where(x => x.IdPesoEquipaje == value).FirstOrDefault();
+        pasajero.precioEquipaje = (pasajero.cantidadEquipaje* pesoEquipaje.Precio);
+        pasajero.pesoEquipaje = pesoEquipaje.Peso;
+    }
+
+    async void AgregarPasajero()
+    {
+        HttpResponseMessage response;
+        ocultarMensajes();
+        if (cantidadPasajero >bandera)
+        {
+            pasajero.numeroVuelo = numvuelo;
+            pasajeros.Add(pasajero);
+            bandera++;
+            mostrarPasajeros = true;
+            SumaTotalTiquiteVuelo();
+
+            response = await Http.PostAsJsonAsync<PasajeroVueloDTO>("Pasajero/InsertaPasajeroVuelo", pasajero);
+            pasajero = new PasajeroVueloDTO();
+            StateHasChanged();
+        }
+        else
+        {
+            Mensaje("Cantidad de pasajero supera la escogida en formulario de busqueda de vuelos", "alert alert-warning col-12");
+        }
+
+    }
+
+    private void ocultarMensajes()
+    {
+        mostrarMensajes = false;
+        mensajesValidacion = string.Empty;
+        claseCSS = string.Empty;
+    }
+    private void Mensaje(string mensaje, string clase, bool mostrar = true)
+    {
+        mostrarMensajes = mostrar;
+        mensajesValidacion = mensaje;
+        claseCSS = clase;
+    }
+
+
+
+    void IrAResumen()
+    {
+        string identificaciones = string.Empty;
+        StringBuilder v = new StringBuilder(); 
+        ocultarMensajes();
+        if(pasajeros?.Count==0 || pasajeros?.Count < cantidadPasajero)
+        {
+            Mensaje("Favor completar la información faltante", "alert alert-warning col-12");
+        }
+        else
+        {
+            foreach(var item in pasajeros)
+            {
+                v.Append("'" + item .Identificacion+ "'");
+                v.Append(",");
+            }
+          
+             //Mensaje(v.ToString().Remove(v.Length-1), "alert alert-warning col-12");
+
+             navigationManager.NavigateTo($"resumen/{v.ToString().Remove(v.Length-1)}");
+        }
+    }
 }

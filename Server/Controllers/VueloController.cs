@@ -66,6 +66,41 @@ namespace AirTiquiciaAPP.Server.Controllers
                 .Stream(Response.Body, defaultOutput: "[]");
         }
 
+        [HttpGet("ObtenerVueloPorNumero/{numVuelo}")]//IdPersonaTripulacion me falta esta union no se como va.
+        public async Task ObtenerVueloPorNumero(string numVuelo)
+        {
+            _logger.LogInformation("Obteniendo un avion");
+            Response.ContentType = "application/json";
+            await _command.Sql("SELECT " +
+                                    "v.IdVuelo," +
+                                    "v.IdTipoVuelo," +
+                                    "v.IdAvion," +
+                                    "v.IdDestino," +
+                                    "v.IdDestinoLlegada," +
+                                    // "v.IdPersonaTripulacion," +
+                                    "v.NumeroVuelo," +
+                                    "v.FechaSalida, " +
+                                    "v.FechaLLegada, " +
+                                    "v.HoraSalida, " +
+                                    "v.MinutosSalida, " +
+                                    "v.DuracionHoraVuelo, " +
+                                    "v.DuracionMinutosVuelo, " +
+                                    "v.HoraLLegada, " +
+                                    "v.MinutosLLegada," +
+                                    "tv.Descripcion AS TipoVueloDescripcion," +
+                                    "av.Descripcion AS AvionDescripcion," +
+                                    "de.Nombre AS DestinoDescripcion," +
+                                    "des.Nombre AS DestinoLlegada , v.Precio" +
+              " FROM Vuelo v INNER JOIN TipoVuelo tv ON v.IdTipoVuelo = tv.IdTipoVuelo " +
+              " INNER JOIN Avion av ON v.IdAvion = av.IdAvion " +
+              " INNER JOIN Destino de ON v.IdDestino = de.IdDestino " +
+              "INNER JOIN Destino des ON v.IdDestinoLlegada =des.IdDestino  " +
+                " WHERE v.NumeroVuelo=@numVuelo FOR JSON PATH")
+                .Param("numVuelo", numVuelo)
+                .Stream(Response.Body, defaultOutput: "[]");
+        }
+
+
         [HttpGet()]
         public async Task ObtenerTodos()
         {

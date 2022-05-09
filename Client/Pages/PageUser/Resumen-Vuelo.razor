@@ -1,0 +1,17 @@
+﻿@page "/resumen/{identificaciones}/{numeroVuelo}"
+@using AirTiquiciaAPP.Shared
+@using AirTiquiciaAPP.Shared.DTOs
+@using System.Text;
+@inject HttpClient Http
+@layout MainPageLayout
+
+<p>@identificaciones</p>
+@code {
+
+    [Parameter]
+    public string identificaciones { get; set; }
+     [Parameter]
+    public string  numeroVuelo { get; set; }
+
+
+}

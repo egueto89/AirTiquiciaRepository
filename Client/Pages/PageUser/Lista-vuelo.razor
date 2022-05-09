@@ -1,4 +1,4 @@
-﻿@page "/listavuelo"
+﻿@page "/listavuelo/{IdDestino:int}/{IdDestinoLlegada:int}/{FechaSalida}/{cantidadPasajero}"
 @using AirTiquiciaAPP.Shared
 @inject HttpClient Http
 @inject NavigationManager navigationManager
@@ -23,7 +23,6 @@
                     <th>Avion</th>
                     <th>Destino</th>
                     <th>Llegada</th>
-                    <th>Tripulación</th>
                     <th>Número Vuelo</th>
                     <th>Fecha Salida</th>
                     <th>Fecha Llegada</th>
@@ -33,6 +32,7 @@
                     <th>Duración Minutos</th>
                     <th>Hora Llegada</th>
                     <th>Minutos Llegada</th>
+                    <th>Precio</th>
                 </tr>
             </thead>
             <tbody>
@@ -45,12 +45,11 @@
                     @foreach (var vuelo in vuelosDisponibles)
                     {
                         @*@onclick="(()=>ObtenerVuelos(vuelo.IdVuelo))*@
-                        <tr @onclick="(()=>SeleccionVuelo(vuelo))">
+                        <tr @onclick="(()=>SeleccionVuelo(vuelo))" title="De clic sobre el vuelo de su preferencia.">
                             <td>@vuelo.TipoVueloDescripcion</td>
                             <td>@vuelo.AvionDescripcion</td>
                             <td>@vuelo.DestinoDescripcion</td>
                             <td>@vuelo.DestinoLlegada</td>
-                            <td>@vuelo.PersoTripu</td>
                             <td>@vuelo.NumeroVuelo</td>
                             <td>@vuelo.FechaSalida</td>
                             <td>@vuelo.FechaLlegada</td>
@@ -60,6 +59,7 @@
                             <td>@vuelo.DuracionMinutosVuelo</td>
                             <td>@vuelo.HoraLlegada</td>
                             <td>@vuelo.MinutosLlegada</td>
+                            <td> $ @vuelo.Precio</td>
                         </tr>
                     }
                 }
@@ -67,16 +67,29 @@
             </tbody>
         </table>
     }
-}else
+}
+else
 {
-    <Dato_Pasejero_vuelo vuelo="vueloSeleccionado" cantidadPasajero="busquedaVuelo.CantidadPasajero"></Dato_Pasejero_vuelo>
+    @*   <Dato_Pasejero_vuelo vuelo="vueloSeleccionado" cantidadPasajero="busquedaVuelo.CantidadPasajero"></Dato_Pasejero_vuelo>*@
 }
 
 
 @code {
 
+    //[Parameter]
+    //public BusquedaVuelo busquedaVuelo { get; set; }
+
     [Parameter]
-    public BusquedaVuelo busquedaVuelo { get; set; }
+    public int IdDestino { get; set; }
+
+    [Parameter]
+    public int IdDestinoLlegada { get; set; }
+    [Parameter]
+    public string FechaSalida { get; set; }
+
+    [Parameter]
+    public string cantidadPasajero { get; set; }
+
     private bool mostrarVuelos = true;
     private List<Vuelo> vuelosDisponibles = new List<Vuelo>();
     private Vuelo vueloSeleccionado = new Vuelo();
@@ -85,15 +98,17 @@
     {
 
         //selected element
-        vuelosDisponibles = await Http.GetFromJsonAsync<List<Vuelo>>($"BuscarVuelo/buscarVuelosDisponibles/{busquedaVuelo.IdDestino}/{busquedaVuelo.IdDestinoLlegada}/{busquedaVuelo.FechaSalida.ToString("yyyyMMdd")}");
+        //vuelosDisponibles = await Http.GetFromJsonAsync<List<Vuelo>>($"BuscarVuelo/buscarVuelosDisponibles/{busquedaVuelo.IdDestino}/{busquedaVuelo.IdDestinoLlegada}/{busquedaVuelo.FechaSalida.ToString("yyyyMMdd")}");
+        vuelosDisponibles = await Http.GetFromJsonAsync<List<Vuelo>>($"BuscarVuelo/buscarVuelosDisponibles/{IdDestino}/{IdDestinoLlegada}/{FechaSalida}");
 
     }
 
 
     private void SeleccionVuelo(Vuelo vuelo)
     {
-        vueloSeleccionado = vuelo;
-        mostrarVuelos = false;
+        //vueloSeleccionado = vuelo;
+        //mostrarVuelos = false;
+         navigationManager.NavigateTo($"datoPasajeroVuelo/{vuelo.NumeroVuelo}/{cantidadPasajero}");
 
     }
 
